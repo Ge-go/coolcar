@@ -12,10 +12,26 @@ App<IAppOption>({
       success: res => {
         console.log(res.code)
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
+        
       },
     })
 
     // 获取用户信息,不使用回调函数
-    wx.getSetting
+    // wx.getSetting().then(
+    //   res => {
+    //     if (res.authSetting['scope.userInfo']) {
+    //       return wx.getUserInfo()
+    //     }
+    //     return undefined
+    //   }).then(res => {
+    //     if (!res) {
+    //       return
+    //     }
+    //     this.globalData.userInfo = res.userInfo
+    //     //通知页面
+    //     if (this.userInfoReadyCallback) {
+    //       this.userInfoReadyCallback(res)
+    //     }
+    //   })
   },
 })
