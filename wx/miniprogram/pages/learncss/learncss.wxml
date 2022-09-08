@@ -1,0 +1,6 @@
+<!-- pages/learncss/learncss.wxml -->
+<text wx:if="{{showPath}}">pages/learncss/learncss.wxml</text>
+<block wx:else>
+    <text>wx learn</text>
+</block>
+<view wx:for="{{values}}" wx:for-item="val" wx:key="id">value is {{val.name}}</view>
