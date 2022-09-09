@@ -1,0 +1,12 @@
+/* pages/learncss/learncss.wxss */
+.text {
+    color: aqua;
+}
+
+.red {
+    color: red;
+}
+
+.item.cu-avatar.xl {
+    width: unset;
+}

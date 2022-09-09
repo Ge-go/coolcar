@@ -4,5 +4,19 @@
   "setting": {
     "compileHotReLoad": true,
     "urlCheck": false
+  },
+  "libVersion": "2.25.4",
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "",
+          "pathName": "pages/learncss/learncss",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
   }
 }
