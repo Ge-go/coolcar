@@ -1,6 +1,11 @@
 <!-- pages/learncss/learncss.wxml -->
-<text wx:if="{{showPath}}">pages/learncss/learncss.wxml</text>
-<block wx:else>
-    <text>wx learn</text>
-</block>
-<view wx:for="{{values}}" wx:for-item="val" wx:key="id">value is {{val.name}}</view>
+<view class="container">
+    <text wx:if="{{showPath}}">pages/learncss/learncss.wxml</text>
+    <block wx:else>
+        <text class="text">wx learn</text>
+    </block>
+    <view wx:for="{{values}}" wx:for-item="val" wx:key="id" class="item cu-avatar xl radius">
+        value is {{val.name}}
+        <view class="cu-tag badge">99+</view>
+    </view>
+</view>
