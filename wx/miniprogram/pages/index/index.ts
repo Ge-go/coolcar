@@ -1,4 +1,5 @@
 Page({
+  isPageShowing: false,
   data: {
     setting: {
       skew: 0,
@@ -50,5 +51,74 @@ Page({
         height: 20,
       },
     ]
+  },
+  onMyLocationTap() {
+    wx.getLocation({
+      type: 'gcj02',
+      success: res => {
+        this.setData({
+          location: {
+            latitude: res.latitude,
+            longitude: res.longitude,
+          }
+        })
+      },
+      fail: res => {
+        wx.showToast({
+          icon: 'none',
+          title: '请前往设置页授权'
+        })
+        console.log(res.errMsg)
+      }
+    })
+  },
+
+  onScanClicked() {
+    wx.scanCode({
+      success: () => {
+        wx.navigateTo({
+          url: '/pages/register/register'
+        })
+      },
+      fail: console.error,
+    })
+  },
+
+  onShow() {
+    this.isPageShowing = true
+  },
+
+  onHide() {
+    this.isPageShowing = false
+  },
+
+  moveCars() {  //测试让车跑动
+    const map = wx.createMapContext("map")
+    const dest = {
+      latitude: 23.099994,
+      longitude: 113.324520,
+    }
+
+    const moveCar = () => {
+      dest.latitude += 0.1
+      dest.longitude += 0.1
+      map.translateMarker({
+        destination: {
+          latitude: dest.latitude,
+          longitude: dest.longitude,
+        },
+        markerId: 0,
+        autoRotate: false,
+        rotate: 0,
+        duration: 5000,
+        animationEnd: () => {
+          if (this.isPageShowing) {
+            moveCar()
+          }
+        }
+      })
+    }
+
+    moveCar()
   }
 })

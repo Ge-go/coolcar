@@ -1,0 +1,7 @@
+<view class="container">
+    <view class="lic-templ" wx:if="{{!hasLicImage}}">
+        <image class="lic-templ-img" src="/resources/lic.png" />
+        <view class="cuIcon-camerafill lg text-gray"></view>
+        <view class="instruction">请上传驾驶证照片</view>
+    </view>
+</view>

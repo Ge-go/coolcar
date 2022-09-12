@@ -1,0 +1,26 @@
+/* pages/register/register.wxss */
+
+.lic-templ {
+    width: 600rpx;
+    height: 450rpx;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lic-templ-img {
+    opacity: 0.2;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.cuIcon-camerafill {
+    font-size: 172rpx;
+}
+
+.instruction {
+    position: absolute;
+    bottom: -74rpx;
+}

@@ -13,15 +13,27 @@ map {
   align-items: center;
   justify-content: space-between;
   width: 87rpx;
-  height: 136rpx;
-  margin-top: 30rpx;
+  height: 160rpx;
+  margin-top: 35rpx;
   position: absolute;
-  right: 5%;
-  bottom: 10%;
-  opacity: .9;
+  left: 5%;
+  bottom: 15%;
+  opacity: .6;
 }
 
 .icon-container cover-image {
   width: 60rpx;
   height: 60rpx;
+}
+
+.btn-container {
+  width: 600rpx;
+  margin-left: 75rpx;
+  bottom: 7%;
+  position: absolute;
+  height: 70rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: .8;
 }
