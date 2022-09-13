@@ -52,6 +52,7 @@ Page({
       },
     ]
   },
+  //TODO: 这里对于定位的处理没有完结,因为定位不能一直调用该方法,这里埋点
   onMyLocationTap() {
     wx.getLocation({
       type: 'gcj02',
@@ -73,6 +74,7 @@ Page({
     })
   },
 
+  //TODO: 这里对于扫码如果是条形码做一些特定的处理
   onScanClicked() {
     wx.scanCode({
       success: () => {

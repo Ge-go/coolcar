@@ -1,19 +1,26 @@
 /* pages/register/register.wxss */
 
+.container {
+    padding-top: 10%;
+}
+
 .lic-templ {
     width: 600rpx;
-    height: 450rpx;
+    height: 375rpx;
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+.stretch {
+    width: 100%;
+    height: 100%;
+}
+
 .lic-templ-img {
     opacity: 0.2;
     position: absolute;
-    width: 100%;
-    height: 100%;
 }
 
 .cuIcon-camerafill {
@@ -22,5 +29,26 @@
 
 .instruction {
     position: absolute;
-    bottom: -74rpx;
+    bottom: -120rpx;
+    font-size: larger;
+}
+
+.cu-form-group .title {
+    min-width: calc(4em+30rpx);
+}
+
+.lic-form {
+    width: 600rpx;
+}
+
+.submit {
+    margin-top: 7%;
+}
+
+.signImg {
+    position: absolute;
+    width: 25%;
+    height: 25%;
+    bottom: 0rpx;
+    right: 0rpx;
 }
