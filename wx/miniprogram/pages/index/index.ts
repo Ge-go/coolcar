@@ -1,7 +1,8 @@
 Page({
   isPageShowing: false,
   data: {
-    setting: {
+    avatarURL: '',  //头像url
+    setting: {  //map setting
       skew: 0,
       rotate: 0,
       showLocation: true,
@@ -52,7 +53,19 @@ Page({
       },
     ]
   },
-  //TODO: 这里对于定位的处理没有完结,因为定位不能一直调用该方法,这里埋点
+
+  onLoad() {  //目前能力只有手动拉起头像
+    wx.getUserProfile({
+      desc: '用于完善会员资料', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
+      success: (res) => {
+        console.log(res.userInfo.avatarUrl)
+        this.setData({
+          avatarURL: res.userInfo.avatarUrl,
+        })
+      }
+    })
+  },
+
   onMyLocationTap() {
     wx.getLocation({
       type: 'gcj02',
@@ -64,12 +77,11 @@ Page({
           }
         })
       },
-      fail: res => {
+      fail: () => {
         wx.showToast({
           icon: 'none',
-          title: '请前往设置页授权'
+          title: '请勿频繁查询定位'
         })
-        console.log(res.errMsg)
       }
     })
   },

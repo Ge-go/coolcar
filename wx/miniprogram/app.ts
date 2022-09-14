@@ -5,7 +5,6 @@ App<IAppOption>({
     // 展示本地存储能力
     const logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())  //从左边依次将日期写入数组当中
-    wx.setStorageSync('logs', logs)
 
     // 登录
     wx.login({

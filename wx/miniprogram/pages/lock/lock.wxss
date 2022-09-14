@@ -8,6 +8,10 @@ page {
     padding-bottom: 100rpx;
 }
 
+.margin-top {
+    margin-top: 30rpx;
+}
+
 .sedan {
     width: 600rpx;
     height: 360rpx;

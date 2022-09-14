@@ -1,66 +1,37 @@
+const shareLocationKey = "share_Location"
 // pages/lock/lock.ts
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    shareLocation: false,
+    avatarURL: ''  //获取头像引入的url
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad() {
-
+  onChooseAvatar(e: any) {
+    this.setData({
+      avatarURL: e.detail.avatarUrl,
+      shareLocation: wx.getStorageSync(shareLocationKey) || true
+    })
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
+  onShareLocation(e: any) {
+    const shareLocation: boolean = e.detail.value
+    wx.setStorageSync(shareLocationKey, shareLocation)
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
+  //TODO: 后续的开锁接口
+  onUnlock() {
+    wx.showLoading({
+      title: '开锁中',
+      mask: true, //防止触摸下一层
+    })
+    setTimeout(() => {
+      wx.redirectTo(
+        {
+          url: '/pages/driving/driving',
+          complete: () => {
+            wx.hideLoading()
+          }
+        })
+    }, 500)
   }
 })

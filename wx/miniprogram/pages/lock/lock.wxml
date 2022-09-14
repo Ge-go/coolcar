@@ -7,10 +7,16 @@
             <view>请将车辆停放在指定区域停车位内</view>
         </view>
     </view>
-    <view>
-        <view class="cu-avatar round lg bg-grey margin-xs">
+    <view class="avatar-container">
+        <button wx:if="{{!avatarURL}}" class="cu-avatar round lg bg-grey margin-xs" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
             <text class="cuIcon-people"></text>
+        </button>
+        <!-- 这里将if放置到下边,是因为防止多次点击获取头像 -->
+        <view class="switch-container" wx:if="{{avatarURL}}">
+            <image src="{{avatarURL}}" class="cu-avatar round lg bg-grey margin-xs" />
+            <switch bindchange="onShareLocation" checked="{{shareLocation}}"/>
         </view>
+        <view class="margin-top">实时展示我的头像</view>
     </view>
-    <button style="width:80%;" class="bg-grey lg">立即解锁</button>
+    <button style="width:80%;" class="bg-grey lg" bindtap="onUnlock">立即解锁</button>
 </view>
