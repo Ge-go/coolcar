@@ -7,9 +7,11 @@ This is a car rental applet front-end code.
         colorui   //外部css组件库
         miniprogram
             pages  //所有页面
+                driving  行驶记录页面,用于计费和处理时间
                 index    用户首页
                 lock     开锁页面
                 register 注册信息页面
+                pay      支付页面
         resources //外部图片资源
 
     server:服务后台

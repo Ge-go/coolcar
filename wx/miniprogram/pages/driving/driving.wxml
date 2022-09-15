@@ -1,4 +1,34 @@
-<!-- pages/driving/driving.wxml -->
 <view class="container">
-    
+    <view class="pannel padding-bottom-lg">
+        <view class="payment margin-top">
+            <view class="time">
+                <text class="cuIcon-timefill"></text>
+                <text class="time-driven">{{elapsed}}</text>
+            </view>
+            <view class="fee margin-top-sm">
+                <text>费用: {{fee}}元</text>
+            </view>
+        </view>
+        <button style="width:100%" class="cu-btn bg-red margin-tb-sm lg" bindtap="onEndTripTap">
+            结束行程
+        </button>
+    </view>
+    <map id="map" latitude="{{location.latitude}}" longitude="{{location.longitude}}" show-location scale="{{scale}}" markers="{{markers}}" />
+</view>
+<view aria-role="dialog" aria-modal="true" class="fadeIn" wx:if="{{iosDialog1}}">
+    <view class="weui-mask"></view>
+    <view class="weui-dialog">
+        <view class="weui-dialog__hd">
+            <strong class="weui-dialog__title">结束行程</strong>
+        </view>
+        <view class="weui-dialog__bd">您是否要结束当前行程,结束行程将结束该行程生成订单</view>
+        <view class="weui-dialog__ft">
+            <view aria-role="button" class="weui-dialog__btn weui-dialog__btn_default" bindtap="closeTip">
+                关闭
+            </view>
+            <view aria-role="button" class="weui-dialog__btn weui-dialog__btn_primary" bindtap="toSettlement">
+                确认
+            </view>
+        </view>
+    </view>
 </view>

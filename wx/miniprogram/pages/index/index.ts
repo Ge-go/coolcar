@@ -86,7 +86,7 @@ Page({
     })
   },
 
-  //TODO: 这里对于扫码如果是条形码做一些特定的处理
+  //处理扫码动作
   onScanClicked() {
     wx.scanCode({
       success: () => {
@@ -94,8 +94,21 @@ Page({
           url: '/pages/register/register'
         })
       },
-      fail: console.error,
+      fail: res => {
+        console.log(res)
+        //针对错误特定处理
+        this.detailErrMsg(res)
+      },
     })
+  },
+
+  detailErrMsg(res: WechatMiniprogram.GeneralCallbackResult) {
+    if (res.errMsg === "scanCode:fail") {  //special detail
+      wx.showToast({
+        icon: 'none',
+        title: '请扫描正确二维码',
+      })
+    }
   },
 
   onShow() {
