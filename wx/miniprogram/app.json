@@ -5,7 +5,8 @@
     "pages/register/register",
     "pages/lock/lock",
     "pages/driving/driving",
-    "pages/pay/pay"
+    "pages/pay/pay",
+    "pages/mytrips/mytrips"
   ],
   "requiredPrivateInfos": [
     "startLocationUpdate",
@@ -26,5 +27,6 @@
     "navigationBarTextStyle": "black"
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "functionalPages": true
 }

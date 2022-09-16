@@ -5,6 +5,7 @@ This is a car rental applet front-end code.
 ## 目录
     wx:微信小程序
         colorui   //外部css组件库
+        weui      //外部css组件库
         miniprogram
             pages  //所有页面
                 driving  行驶记录页面,用于计费和处理时间
@@ -12,6 +13,7 @@ This is a car rental applet front-end code.
                 lock     开锁页面
                 register 注册信息页面
                 pay      支付页面
+                mytrips  我的行程页面
         resources //外部图片资源
 
     server:服务后台

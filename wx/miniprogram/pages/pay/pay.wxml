@@ -1,1 +1,51 @@
-<text>计费页面</text>
+<view class="weui-cells__title">订单信息</view>
+<view class="weui-cells weui-cells_after-title">
+    <view class="weui-cell weui-cell_active">
+        <view class="weui-cell__hd">
+            <view class="weui-label">订单号</view>
+        </view>
+        <view class="weui-cell__bd">
+            <input class="weui-input" placeholder-class="weui-input__placeholder" disabled="disabled" value="{{orderNum}}" />
+        </view>
+    </view>
+    <view class="weui-cell weui-cell_active">
+        <view class="weui-cell__hd">
+            <view class="weui-label">订单金额</view>
+        </view>
+        <view class="weui-cell__bd">
+            <input class="weui-input" placeholder-class="weui-input__placeholder" disabled="disabled" value="{{orderAmount}}" />
+        </view>
+    </view>
+    <view class="weui-cell weui-cell_active">
+        <view class="weui-cell__hd">
+            <view class="weui-label">行程时间</view>
+        </view>
+        <view class="weui-cell__bd">
+            <input class="weui-input" placeholder-class="weui-input__placeholder" disabled="disabled" value="{{travelTime}}" />
+        </view>
+    </view>
+    <view class="weui-cell weui-cell_active">
+        <view class="weui-cell__hd">
+            <view class="weui-label">日期</view>
+        </view>
+        <view class="weui-cell__bd">
+            <input class="weui-input" placeholder-class="weui-input__placeholder" disabled="disabled" value="{{date}}" />
+        </view>
+    </view>
+</view>
+<view class="page" data-weui-theme="{{theme}}" data-weui-mode="{{mode}}">
+    <view class="weui-bottom-fixed-opr-page  {{wrap ? 'weui-bottom-fixed-opr-page_btn-wrap' : ''}}">
+        <view class="weui-bottom-fixed-opr-page__content">
+            <view class="weui-bottom-fixed-opr-demo">
+            </view>
+        </view>
+        <view class="weui-bottom-fixed-opr" id="js_opr">
+            <navigator class="weui-btn weui-btn_primary" id="js_btn" aria-role="button" url="javascript:;" bindtap="payFor">
+                支付订单
+            </navigator>
+            <navigator class="weui-btn weui-btn_default" aria-role="button" url="javascript:;" bindtap="toIndex">
+                返回首页
+            </navigator>
+        </view>
+    </view>
+</view>

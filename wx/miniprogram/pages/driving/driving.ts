@@ -45,7 +45,7 @@ Page({
 
             //将内部数据放入全局Storage
             wx.setStorageSync(travelSecKey, this.timer)
-            wx.setStorageSync(travelExpensesSecKey, Math.floor(cents))
+            wx.setStorageSync(travelExpensesSecKey, cents.toFixed(2))
         }
     },
 

@@ -119,6 +119,12 @@ Page({
     this.isPageShowing = false
   },
 
+  onMyTripsTip() {
+    wx.navigateTo({
+      url: '/pages/mytrips/mytrips',
+    })
+  },
+
   moveCars() {  //测试让车跑动
     const map = wx.createMapContext("map")
     const dest = {

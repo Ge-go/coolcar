@@ -11,7 +11,7 @@
       "list": [
         {
           "name": "",
-          "pathName": "pages/driving/driving",
+          "pathName": "pages/mytrips/mytrips",
           "query": "",
           "launchMode": "default",
           "scene": null
