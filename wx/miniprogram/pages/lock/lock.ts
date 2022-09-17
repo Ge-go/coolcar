@@ -1,9 +1,19 @@
+import { routing } from "../../utils/routing"
+
 const shareLocationKey = "share_Location"
 // pages/lock/lock.ts
 Page({
+  trip_id: '', //汽车id
   data: {
     shareLocation: false,
-    avatarURL: ''  //获取头像引入的url
+    avatarURL: '',  //获取头像引入的url
+  },
+
+  onLoad(opt: Record<'car_id', string>) {
+    const o: routing.LockOpts = opt
+    if (o.car_id) {
+      this.trip_id = decodeURIComponent(opt.car_id)
+    }
   },
 
   onChooseAvatar(e: any) {
@@ -36,10 +46,14 @@ Page({
           title: '开锁中',
           mask: true, //防止触摸下一层
         })
+        //这里我要知道我开的是哪辆车的锁才回去跳转
+        console.log("unlocking car", this.trip_id)
         setTimeout(() => {
           wx.redirectTo(
             {
-              url: '/pages/driving/driving',
+              url: routing.drving({
+                trip_id: this.trip_id
+              }),
               complete: () => {
                 wx.hideLoading()
               }

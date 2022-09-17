@@ -1,5 +1,9 @@
+import { routing } from "../../utils/routing"
+
 // pages/register/register.ts
 Page({
+  redirectURL: '', //要跳转的路径
+
   data: {
     licNo: '', //驾驶证号
     name: '',  //姓名
@@ -10,6 +14,14 @@ Page({
     state: 'UNSUBMITTED' as 'UNSUBMITTED' | 'PENDING' | 'VERIFIED',//递交审查状态
     signImgURL: '' //完成审查后的对勾的URL
   },
+
+  onLoad(opt: Record<'redirect', string>) {
+    const o: routing.RegisterOpts = opt
+    if (o.redirect) {
+      this.redirectURL = decodeURIComponent(o.redirect)
+    }
+  },
+
   onLoadImg() {  //加载驾驶证图片,用于解析数据
     wx.chooseMedia({
       success: res => {
@@ -54,9 +66,12 @@ Page({
       })
     }, 30)
 
-    wx.redirectTo({
-      url: '/pages/lock/lock'
-    })
+    if (this.redirectURL) {
+      console.log(this.redirectURL)
+      wx.redirectTo({
+        url: this.redirectURL
+      })
+    }
   },
   //重新审查 TODO: 后面也需要接入后端
   onResubmit() {

@@ -1,7 +1,8 @@
+import { routing } from "../../utils/routing"
+
 const centerPerSec = 0.7  //记录租车价格,每秒钟0.35分,如产品有改动,则计费规则可改变
 // pages/driving/driving.ts
-const travelSecKey = "travel_time" //记录全局行程时间
-const travelExpensesSecKey = "travel_expenses"   //记录全局行程计费
+let elapsedSec = 0
 let cents = 0
 
 function formatDuration(sec: number) {  //计算时间函数
@@ -26,13 +27,15 @@ Page({
             latitude: 22,
             longitude: 100,
         },
-        scale: 12,
         elapsed: '00:00:00',
         fee: '0.00',
+        scale: 12,
         isSettlement: true as undefined | boolean, //是否结算
     },
 
-    onLoad() {
+    onLoad(opt: Record<'trip_id', string>) {
+        const o: routing.DrivingOpts = opt
+        console.log("current trip", o.trip_id)
         this.setupLocationUpdator()
         this.setupTimer()
     },
@@ -42,10 +45,8 @@ Page({
         //数据清洗
         if (this.timer) {
             clearInterval(this.timer)
-
-            //将内部数据放入全局Storage
-            wx.setStorageSync(travelSecKey, this.timer)
-            wx.setStorageSync(travelExpensesSecKey, cents.toFixed(2))
+            elapsedSec = 0
+            cents = 0
         }
     },
 
@@ -68,8 +69,6 @@ Page({
 
     //监控当前租车时间
     setupTimer() {
-        let elapsedSec = 0
-
         this.timer = setInterval(() => {
             elapsedSec++
             cents += centerPerSec
@@ -109,9 +108,14 @@ Page({
     //从当前页面进入到结算页面
     toSettlement() {
         //生成订单
+        console.log(elapsedSec, cents)
 
         wx.redirectTo({
-            url: '/pages/pay/pay',
+            //url: `/pages/pay/pay?travel_time=${formatDuration(elapsedSec)}&travel_expenses=${formatFee(cents)}`,
+            url: routing.Pay({
+                travel_time: formatDuration(elapsedSec),
+                travel_expenses: formatFee(cents)
+            })
         })
     }
 })

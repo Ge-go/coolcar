@@ -1,3 +1,5 @@
+import { routing } from "../../utils/routing"
+
 Page({
   isPageShowing: false,
   data: {
@@ -90,8 +92,21 @@ Page({
   onScanClicked() {
     wx.scanCode({
       success: () => {
-        wx.navigateTo({
-          url: '/pages/register/register'
+        wx.showModal({
+          title: '身份认证',
+          content: '需要身份认证才能租车',
+          success: () => {
+            //TODO: 模拟获取car_id  为了方便后续页面接入
+            const carID = 'car123'
+            const redirectURL = routing.lock({
+              car_id: carID
+            })
+            wx.navigateTo({
+              url: routing.register({
+                redirectURL: redirectURL,
+              })
+            })
+          }
         })
       },
       fail: res => {
@@ -121,7 +136,7 @@ Page({
 
   onMyTripsTip() {
     wx.navigateTo({
-      url: '/pages/mytrips/mytrips',
+      url: routing.mytrips(),
     })
   },
 

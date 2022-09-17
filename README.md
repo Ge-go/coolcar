@@ -15,6 +15,7 @@ This is a car rental applet front-end code.
                 pay      支付页面
                 mytrips  我的行程页面
         resources //外部图片资源
+        utils     //维护路由,和自定义各种实现的api方法
 
     server:服务后台
     admin:后台管理
