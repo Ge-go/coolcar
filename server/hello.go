@@ -1,8 +1,45 @@
-package tools
+package main
 
 import (
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway"
-	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2"
-	_ "google.golang.org/grpc/cmd/protoc-gen-go-grpc"
-	_ "google.golang.org/protobuf/cmd/protoc-gen-go"
+	trippb "coolcar/proto/gen/go"
+	"encoding/json"
+	"fmt"
+
+	"google.golang.org/protobuf/proto"
 )
+
+func main() {
+	//零值
+	var a int
+	fmt.Println(a) //0
+
+	trip := trippb.Trip{
+		Start:       "abc",
+		End:         "def",
+		DurationSec: 3600,
+		FeeCent:     10000,
+	}
+	//fmt.Println(&trip)
+	data, err := proto.Marshal(&trip) //生成二进制流
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	fmt.Printf("%X\n", data)
+
+	var trip2 trippb.Trip
+	err = proto.Unmarshal(data, &trip2)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println(&trip2)
+
+	data, err = json.Marshal(&trip2)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println(string(data))
+}

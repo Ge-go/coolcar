@@ -18,6 +18,8 @@ This is a car rental applet front-end code.
         utils     //维护路由,和自定义各种实现的api方法
 
     server:服务后台
+        proto  pb协议文件
+
     admin:后台管理
     deployment:部署脚本 (k8s配置)
     miniprogram:前端工作目录(目前小程序内置ts转js)
