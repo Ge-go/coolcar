@@ -53,7 +53,7 @@ Page({
         width: 20,
         height: 20,
       },
-    ]
+    ],
   },
 
   onLoad() {  //目前能力只有手动拉起头像
@@ -91,23 +91,23 @@ Page({
   //处理扫码动作
   onScanClicked() {
     wx.scanCode({
-      success: () => {
-        wx.showModal({
-          title: '身份认证',
-          content: '需要身份认证才能租车',
-          success: () => {
-            //TODO: 模拟获取car_id  为了方便后续页面接入
-            const carID = 'car123'
-            const redirectURL = routing.lock({
-              car_id: carID
-            })
-            wx.navigateTo({
-              url: routing.register({
-                redirectURL: redirectURL,
-              })
-            })
-          }
+      success: async () => {
+        await this.selectComponent('#licModal').showModal()
+        this.setData({
+          showModal: true,
         })
+
+        //TODO: 模拟获取car_id  为了方便后续页面接入(是否还需要再包装)
+        const carID = 'car123'
+        const redirectURL = routing.lock({
+          car_id: carID
+        })
+        wx.navigateTo({
+          url: routing.register({
+            redirectURL: redirectURL,
+          })
+        })
+
       },
       fail: res => {
         console.log(res)
@@ -168,5 +168,5 @@ Page({
     }
 
     moveCar()
-  }
+  },
 })

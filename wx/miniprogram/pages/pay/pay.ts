@@ -1,3 +1,5 @@
+import { routing } from "../../utils/routing"
+
 // pages/pay/pay.ts
 Page({
     data: {
@@ -21,7 +23,7 @@ Page({
 
     toIndex() {
         wx.redirectTo({
-            url: '/pages/index/index',
+            url: routing.mytrips(),
         })
     }
 })

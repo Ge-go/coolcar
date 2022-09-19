@@ -44,7 +44,7 @@
                 支付订单
             </navigator>
             <navigator class="weui-btn weui-btn_default" aria-role="button" url="javascript:;" bindtap="toIndex">
-                返回首页
+                返回
             </navigator>
         </view>
     </view>
