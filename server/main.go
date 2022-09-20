@@ -5,19 +5,22 @@ import (
 	trippb "coolcar/proto/gen/go"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
 	"log"
 	"net"
 	"net/http"
 )
 
 type Service struct {
+	trippb.UnsafeTripServiceServer
 }
 
 func (*Service) GetTrip(ctx context.Context, req *trippb.GetTripReq) (*trippb.GetTripRsp, error) {
 	return &trippb.GetTripRsp{
 		Id: req.GetId(),
 		Trip: &trippb.Trip{
-			Start: "123",
+			DurationSec: 1780,
+			Start:       "123",
 			StartPos: &trippb.Location{
 				Latitude:  123,
 				Longitude: 456,
@@ -27,6 +30,7 @@ func (*Service) GetTrip(ctx context.Context, req *trippb.GetTripReq) (*trippb.Ge
 				{Longitude: 123, Latitude: 456},
 			},
 			FeeCent: 123,
+			Status:  trippb.TripStatus_IN_PROGRESS,
 		},
 	}, nil
 }
@@ -86,7 +90,18 @@ func main() {
 func startGRPCGateway() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel() //运行完结果,cancel掉ctx
-	mux := runtime.NewServeMux()
+	mux := runtime.NewServeMux(runtime.WithMarshalerOption(
+		runtime.MIMEWildcard,
+		&runtime.JSONPb{
+			MarshalOptions: protojson.MarshalOptions{
+				UseEnumNumbers: true, // 枚举字段的值使用数字
+				UseProtoNames:  true,
+			},
+			UnmarshalOptions: protojson.UnmarshalOptions{
+				DiscardUnknown: true, // 忽略 client 发送的不存在的 poroto 字段
+			},
+		},
+	))
 	err := trippb.RegisterTripServiceHandlerFromEndpoint(
 		ctx,
 		mux,

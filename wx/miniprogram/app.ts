@@ -1,17 +1,25 @@
+import { IAppOption } from "./appoption"
+
 // app.ts
 App<IAppOption>({
-  globalData: {},
+  globalData: {
+    
+  },
   onLaunch() {
-    // 展示本地存储能力
-    const logs = wx.getStorageSync('logs') || []
-    logs.unshift(Date.now())  //从左边依次将日期写入数组当中
+    // 请求
+    wx.request({
+      url: 'http://localhost:8080/trip/trip123',
+      method: 'GET',
+      success: console.log,
+      fail: console.error,
+    })
 
     // 登录
     wx.login({
       success: res => {
         console.log(res.code)
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        
+
       },
     })
 
