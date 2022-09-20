@@ -14,6 +14,7 @@ This is a car rental applet front-end code.
                 register 注册信息页面
                 pay      支付页面
                 mytrips  我的行程页面
+            miniprogram_npm  //存放dependencies中的资源存放地,会被打包发到客户端
         resources //外部图片资源
         utils     //维护路由,和自定义各种实现的api方法
 
@@ -27,3 +28,5 @@ This is a car rental applet front-end code.
 ## 如何编译以及运行小程序
     cd wx
     npm install
+    点击工具构建npm
+    点击编译

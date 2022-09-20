@@ -95,7 +95,7 @@ func startGRPCGateway() {
 		&runtime.JSONPb{
 			MarshalOptions: protojson.MarshalOptions{
 				UseEnumNumbers: true, // 枚举字段的值使用数字
-				UseProtoNames:  true,
+				UseProtoNames:  true, // false使用字段为驼峰命名,生成下划线名称
 			},
 			UnmarshalOptions: protojson.UnmarshalOptions{
 				DiscardUnknown: true, // 忽略 client 发送的不存在的 poroto 字段
