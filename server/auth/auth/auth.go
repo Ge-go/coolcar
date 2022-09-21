@@ -3,15 +3,18 @@ package auth
 import (
 	"context"
 	authpb "coolcar/auth/api/gen/v1"
+	"coolcar/auth/dao"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type Service struct {
-	Log *zap.Logger
-	authpb.UnsafeAuthServiceServer
+	Log           *zap.Logger
 	ResolveOpenID OpenIDResolver
+	Mongo         *dao.Mongo
+
+	authpb.UnsafeAuthServiceServer
 }
 
 // OpenIDResolver resolves an authorization code
@@ -26,10 +29,15 @@ func (s *Service) Login(ctx context.Context, req *authpb.LoginReq) (*authpb.Logi
 		return nil, status.Errorf(codes.Unavailable, "cannot resolveOpenID: %v", err)
 	}
 
+	accountID, err := s.Mongo.ResolveAccountID(ctx, result)
+	if err != nil {
+		s.Log.Error("cannot resolve account id:", zap.Error(err))
+	}
+
 	s.Log.Info("received code", zap.String("code", req.GetCode()))
 
 	return &authpb.LoginRsp{
-		AccessToken: "token for open id" + result,
+		AccessToken: "token for open id" + accountID,
 		ExpiresIn:   7200,
 	}, nil
 }

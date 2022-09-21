@@ -38,4 +38,4 @@ This is a car rental applet front-end code.
 
 ![微服务架构图](../coolcar/architectureDiagram/wfw.png)
 
-mongodb://121.37.232.8:27019/?readPreference=primary&ssl=false
+mongodb://121.37.232.8:27019/coolcar?readPreference=primary&ssl=false
