@@ -37,3 +37,5 @@ This is a car rental applet front-end code.
     生成的.d.ts头文件要复制到js中
 
 ![微服务架构图](../coolcar/architectureDiagram/wfw.png)
+
+mongodb://121.37.232.8:27019/?readPreference=primary&ssl=false
