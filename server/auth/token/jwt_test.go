@@ -1,54 +1,10 @@
-package main
+package token
 
 import (
-	"context"
-	authpb "coolcar/auth/api/gen/v1"
-	"coolcar/auth/auth"
-	"coolcar/auth/dao"
-	"coolcar/auth/token"
-	"coolcar/auth/wechat"
 	"github.com/dgrijalva/jwt-go"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
-	"log"
-	"net"
+	"testing"
 	"time"
 )
-
-func main() {
-	logger, err := zap.NewDevelopment()
-	if err != nil {
-		panic(err.Error())
-	}
-
-	lis, err := net.Listen("tcp", ":8081")
-	s := grpc.NewServer()
-
-	mgClient, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://121.37.232.8:27019/coolcar?readPreference=primary&ssl=false"))
-	if err != nil {
-		log.Fatalf("cannot connect mongo:%v", err)
-	}
-
-	prvKey, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(PrivateKey))
-	if err != nil {
-		log.Fatalf("cantnot parse RSA prvKey:%v", err)
-	}
-
-	authpb.RegisterAuthServiceServer(s, &auth.Service{
-		Log: logger,
-		ResolveOpenID: &wechat.Service{
-			AppID:  "wx32e1737ca7ca35ee",
-			Secret: "15edba49c62d8781f9a5c8a0f4d83025",
-		},
-		Mongo:         dao.NewMongo(mgClient.Database("coolcar")),
-		GenerateToken: token.NewJWTToken("coolcar/auth", prvKey),
-		TokenExpire:   2 * time.Hour,
-	})
-
-	s.Serve(lis)
-}
 
 const PrivateKey = `-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEAjxOkHahwnPbKMHsPBE9KrSQDEd968SRrKc7aFum5WSrXcttU
@@ -77,3 +33,25 @@ YgB42w0CgYA1nwNfwxxxoLVxGpVh4WbrMlbBz5N9wx3DYLhvPqUc3W0H9SzuZ/YR
 BMn8ha7Cdy/AYwG3ufqKVzOUd5JeUxQHsjKgvM45qJDn9YZRaGFjZ3l6eSxA7VbN
 +ZBOV0v6Y10QEblUJu8QuG5O1iDlhGvnBofng92kcTIMSwCvqGEPcg==
 -----END RSA PRIVATE KEY-----`
+
+func TestGenerateToken(t *testing.T) {
+	key, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(PrivateKey))
+	if err != nil {
+		t.Fatalf("cannot parse private key: %v", err)
+	}
+	g := NewJWTToken("coolcar/auth", key)
+	g.nowFunc = func() time.Time {
+		return time.Unix(1516239022, 0)
+	}
+	token, err := g.GenerateToken("632b16ccc9a624e11223a600", 2*time.Hour)
+	if err != nil {
+		t.Errorf("cannot generate token: %v", err)
+	}
+
+	//token底层排列
+	want := "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTYyNDYyMjIsImlhdCI6MTUxNjIzOTAyMiwiaXNzIjoiY29vbGNhci9hdXRoIiwic3ViIjoiNjMyYjE2Y2NjOWE2MjRlMTEyMjNhNjAwIn0.YyDC6FyAwlzBQf0YVfNcnldO3H1Drh2EP9e-g6sfoqd1IQVOupzXWm5EhtKvBr12pqN1MOiDeza092Ud7E6dgHRhCPIgIF64keQiuNuIeFhNPz71q3YCvXOH45jJMIxS3xpCgrmO58PsBwC8ic3SW4q7zi-IsiyeIWW3IGXVLr5FDj6uTUwfml4rhdgz2znFAQYE2ZDl_mVUIroOzsPh0f53Lj9SKD8agVZgME-SyTBhyBxXZQxLP1nf9jepklzxHiTbtfCUbd7wo2WNbwUoj01zJ2DoAQ_-1vuy90MbrY5A8yvLXH7tiEcIUXlkhqkYdTqBGfosQep1as9vBuKMww"
+
+	if token != want {
+		t.Errorf("wrong token generated. want: %q;\n got:%q", want, token)
+	}
+}
