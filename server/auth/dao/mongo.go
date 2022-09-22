@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 const openIDField = "open_id"
@@ -29,7 +28,6 @@ func NewMongo(db *mongo.Database) *Mongo {
 
 func (m *Mongo) ResolveAccountID(ctx context.Context, openID string) (string, error) {
 	insertedID := m.newObjID()
-	log.Println(insertedID)
 
 	res := m.col.FindOneAndUpdate(ctx, bson.M{
 		openIDField: openID,

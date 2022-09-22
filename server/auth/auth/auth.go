@@ -34,10 +34,10 @@ func (s *Service) Login(ctx context.Context, req *authpb.LoginReq) (*authpb.Logi
 		s.Log.Error("cannot resolve account id:", zap.Error(err))
 	}
 
-	s.Log.Info("received code", zap.String("code", req.GetCode()))
+	s.Log.Info("received code", zap.String("account id code:", accountID))
 
 	return &authpb.LoginRsp{
-		AccessToken: "token for open id" + accountID,
+		AccessToken: "token for account id:" + accountID,
 		ExpiresIn:   7200,
 	}, nil
 }
