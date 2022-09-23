@@ -51,7 +51,7 @@ func (s *Service) Login(ctx context.Context, req *authpb.LoginReq) (*authpb.Logi
 		return nil, status.Errorf(codes.Internal, "")
 	}
 
-	s.Log.Info("generateToken is success:", zap.String("token is:", accountID))
+	s.Log.Info("generateToken is success:", zap.String("token is:", token))
 
 	return &authpb.LoginRsp{
 		AccessToken: token,
