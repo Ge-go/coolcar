@@ -56,46 +56,46 @@ export namespace rental {
             public toJSON(): { [k: string]: any };
         }
 
-        /** Properties of a TripServiceRsp. */
-        interface ITripServiceRsp {
+        /** Properties of a CreateTripRsp. */
+        interface ICreateTripRsp {
         }
 
-        /** Represents a TripServiceRsp. */
-        class TripServiceRsp implements ITripServiceRsp {
+        /** Represents a CreateTripRsp. */
+        class CreateTripRsp implements ICreateTripRsp {
 
             /**
-             * Constructs a new TripServiceRsp.
+             * Constructs a new CreateTripRsp.
              * @param [properties] Properties to set
              */
-            constructor(properties?: rental.v1.ITripServiceRsp);
+            constructor(properties?: rental.v1.ICreateTripRsp);
 
             /**
-             * Decodes a TripServiceRsp message from the specified reader or buffer.
+             * Decodes a CreateTripRsp message from the specified reader or buffer.
              * @param reader Reader or buffer to decode from
              * @param [length] Message length if known beforehand
-             * @returns TripServiceRsp
+             * @returns CreateTripRsp
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.TripServiceRsp;
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.CreateTripRsp;
 
             /**
-             * Creates a TripServiceRsp message from a plain object. Also converts values to their respective internal types.
+             * Creates a CreateTripRsp message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
-             * @returns TripServiceRsp
+             * @returns CreateTripRsp
              */
-            public static fromObject(object: { [k: string]: any }): rental.v1.TripServiceRsp;
+            public static fromObject(object: { [k: string]: any }): rental.v1.CreateTripRsp;
 
             /**
-             * Creates a plain object from a TripServiceRsp message. Also converts values to other types if specified.
-             * @param message TripServiceRsp
+             * Creates a plain object from a CreateTripRsp message. Also converts values to other types if specified.
+             * @param message CreateTripRsp
              * @param [options] Conversion options
              * @returns Plain object
              */
-            public static toObject(message: rental.v1.TripServiceRsp, options?: $protobuf.IConversionOptions): { [k: string]: any };
+            public static toObject(message: rental.v1.CreateTripRsp, options?: $protobuf.IConversionOptions): { [k: string]: any };
 
             /**
-             * Converts this TripServiceRsp to JSON.
+             * Converts this CreateTripRsp to JSON.
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };
@@ -115,7 +115,7 @@ export namespace rental {
             /**
              * Calls CreateTrip.
              * @param request CreateTripReq message or plain object
-             * @param callback Node-style callback called with the error, if any, and TripServiceRsp
+             * @param callback Node-style callback called with the error, if any, and CreateTripRsp
              */
             public createTrip(request: rental.v1.ICreateTripReq, callback: rental.v1.TripService.CreateTripCallback): void;
 
@@ -124,7 +124,7 @@ export namespace rental {
              * @param request CreateTripReq message or plain object
              * @returns Promise
              */
-            public createTrip(request: rental.v1.ICreateTripReq): Promise<rental.v1.TripServiceRsp>;
+            public createTrip(request: rental.v1.ICreateTripReq): Promise<rental.v1.CreateTripRsp>;
         }
 
         namespace TripService {
@@ -132,9 +132,9 @@ export namespace rental {
             /**
              * Callback as used by {@link rental.v1.TripService#createTrip}.
              * @param error Error, if any
-             * @param [response] TripServiceRsp
+             * @param [response] CreateTripRsp
              */
-            type CreateTripCallback = (error: (Error|null), response?: rental.v1.TripServiceRsp) => void;
+            type CreateTripCallback = (error: (Error|null), response?: rental.v1.CreateTripRsp) => void;
         }
     }
 }

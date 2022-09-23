@@ -135,23 +135,23 @@ export const rental = $root.rental = (() => {
             return CreateTripReq;
         })();
 
-        v1.TripServiceRsp = (function() {
+        v1.CreateTripRsp = (function() {
 
             /**
-             * Properties of a TripServiceRsp.
+             * Properties of a CreateTripRsp.
              * @memberof rental.v1
-             * @interface ITripServiceRsp
+             * @interface ICreateTripRsp
              */
 
             /**
-             * Constructs a new TripServiceRsp.
+             * Constructs a new CreateTripRsp.
              * @memberof rental.v1
-             * @classdesc Represents a TripServiceRsp.
-             * @implements ITripServiceRsp
+             * @classdesc Represents a CreateTripRsp.
+             * @implements ICreateTripRsp
              * @constructor
-             * @param {rental.v1.ITripServiceRsp=} [properties] Properties to set
+             * @param {rental.v1.ICreateTripRsp=} [properties] Properties to set
              */
-            function TripServiceRsp(properties) {
+            function CreateTripRsp(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                         if (properties[keys[i]] != null)
@@ -159,20 +159,20 @@ export const rental = $root.rental = (() => {
             }
 
             /**
-             * Decodes a TripServiceRsp message from the specified reader or buffer.
+             * Decodes a CreateTripRsp message from the specified reader or buffer.
              * @function decode
-             * @memberof rental.v1.TripServiceRsp
+             * @memberof rental.v1.CreateTripRsp
              * @static
              * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
              * @param {number} [length] Message length if known beforehand
-             * @returns {rental.v1.TripServiceRsp} TripServiceRsp
+             * @returns {rental.v1.CreateTripRsp} CreateTripRsp
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            TripServiceRsp.decode = function decode(reader, length) {
+            CreateTripRsp.decode = function decode(reader, length) {
                 if (!(reader instanceof $Reader))
                     reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.TripServiceRsp();
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.CreateTripRsp();
                 while (reader.pos < end) {
                     let tag = reader.uint32();
                     switch (tag >>> 3) {
@@ -185,44 +185,44 @@ export const rental = $root.rental = (() => {
             };
 
             /**
-             * Creates a TripServiceRsp message from a plain object. Also converts values to their respective internal types.
+             * Creates a CreateTripRsp message from a plain object. Also converts values to their respective internal types.
              * @function fromObject
-             * @memberof rental.v1.TripServiceRsp
+             * @memberof rental.v1.CreateTripRsp
              * @static
              * @param {Object.<string,*>} object Plain object
-             * @returns {rental.v1.TripServiceRsp} TripServiceRsp
+             * @returns {rental.v1.CreateTripRsp} CreateTripRsp
              */
-            TripServiceRsp.fromObject = function fromObject(object) {
-                if (object instanceof $root.rental.v1.TripServiceRsp)
+            CreateTripRsp.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.CreateTripRsp)
                     return object;
-                return new $root.rental.v1.TripServiceRsp();
+                return new $root.rental.v1.CreateTripRsp();
             };
 
             /**
-             * Creates a plain object from a TripServiceRsp message. Also converts values to other types if specified.
+             * Creates a plain object from a CreateTripRsp message. Also converts values to other types if specified.
              * @function toObject
-             * @memberof rental.v1.TripServiceRsp
+             * @memberof rental.v1.CreateTripRsp
              * @static
-             * @param {rental.v1.TripServiceRsp} message TripServiceRsp
+             * @param {rental.v1.CreateTripRsp} message CreateTripRsp
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            TripServiceRsp.toObject = function toObject() {
+            CreateTripRsp.toObject = function toObject() {
                 return {};
             };
 
             /**
-             * Converts this TripServiceRsp to JSON.
+             * Converts this CreateTripRsp to JSON.
              * @function toJSON
-             * @memberof rental.v1.TripServiceRsp
+             * @memberof rental.v1.CreateTripRsp
              * @instance
              * @returns {Object.<string,*>} JSON object
              */
-            TripServiceRsp.prototype.toJSON = function toJSON() {
+            CreateTripRsp.prototype.toJSON = function toJSON() {
                 return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
 
-            return TripServiceRsp;
+            return CreateTripRsp;
         })();
 
         v1.TripService = (function() {
@@ -249,7 +249,7 @@ export const rental = $root.rental = (() => {
              * @typedef CreateTripCallback
              * @type {function}
              * @param {Error|null} error Error, if any
-             * @param {rental.v1.TripServiceRsp} [response] TripServiceRsp
+             * @param {rental.v1.CreateTripRsp} [response] CreateTripRsp
              */
 
             /**
@@ -258,12 +258,12 @@ export const rental = $root.rental = (() => {
              * @memberof rental.v1.TripService
              * @instance
              * @param {rental.v1.ICreateTripReq} request CreateTripReq message or plain object
-             * @param {rental.v1.TripService.CreateTripCallback} callback Node-style callback called with the error, if any, and TripServiceRsp
+             * @param {rental.v1.TripService.CreateTripCallback} callback Node-style callback called with the error, if any, and CreateTripRsp
              * @returns {undefined}
              * @variation 1
              */
             Object.defineProperty(TripService.prototype.createTrip = function createTrip(request, callback) {
-                return this.rpcCall(createTrip, $root.rental.v1.CreateTripReq, $root.rental.v1.TripServiceRsp, request, callback);
+                return this.rpcCall(createTrip, $root.rental.v1.CreateTripReq, $root.rental.v1.CreateTripRsp, request, callback);
             }, "name", { value: "CreateTrip" });
 
             /**
@@ -272,7 +272,7 @@ export const rental = $root.rental = (() => {
              * @memberof rental.v1.TripService
              * @instance
              * @param {rental.v1.ICreateTripReq} request CreateTripReq message or plain object
-             * @returns {Promise<rental.v1.TripServiceRsp>} Promise
+             * @returns {Promise<rental.v1.CreateTripRsp>} Promise
              * @variation 2
              */
 

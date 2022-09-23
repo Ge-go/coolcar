@@ -3,26 +3,29 @@ module coolcar
 go 1.17
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/docker/docker v20.10.18+incompatible
+	github.com/docker/go-connections v0.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.11.3
 	github.com/medivhzhan/weapp/v2 v2.5.0
 	go.mongodb.org/mongo-driver v1.10.2
 	go.uber.org/zap v1.23.0
+	google.golang.org/appengine v1.6.7
 	google.golang.org/grpc v1.49.0
 	google.golang.org/protobuf v1.28.1
 )
 
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
-	github.com/docker/docker v20.10.18+incompatible // indirect
-	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/moby/term v0.0.0-20220808134915-39b0c02b01ae // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
+	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
@@ -38,5 +41,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af // indirect
 	google.golang.org/genproto v0.0.0-20220822174746-9e6da59bd2fc // indirect
+	gotest.tools/v3 v3.3.0 // indirect
 )

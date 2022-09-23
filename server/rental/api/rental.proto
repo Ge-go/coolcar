@@ -7,9 +7,9 @@ message CreateTripReq {
   string start = 1;
 }
 
-message TripServiceRsp {
+message  CreateTripRsp{
 }
 
 service TripService {
-  rpc CreateTrip(CreateTripReq) returns (TripServiceRsp);
+  rpc CreateTrip(CreateTripReq) returns (CreateTripRsp);
 }

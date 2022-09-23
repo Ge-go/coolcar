@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TripServiceClient interface {
-	CreateTrip(ctx context.Context, in *CreateTripReq, opts ...grpc.CallOption) (*TripServiceRsp, error)
+	CreateTrip(ctx context.Context, in *CreateTripReq, opts ...grpc.CallOption) (*CreateTripRsp, error)
 }
 
 type tripServiceClient struct {
@@ -33,8 +33,8 @@ func NewTripServiceClient(cc grpc.ClientConnInterface) TripServiceClient {
 	return &tripServiceClient{cc}
 }
 
-func (c *tripServiceClient) CreateTrip(ctx context.Context, in *CreateTripReq, opts ...grpc.CallOption) (*TripServiceRsp, error) {
-	out := new(TripServiceRsp)
+func (c *tripServiceClient) CreateTrip(ctx context.Context, in *CreateTripReq, opts ...grpc.CallOption) (*CreateTripRsp, error) {
+	out := new(CreateTripRsp)
 	err := c.cc.Invoke(ctx, "/rental.v1.TripService/CreateTrip", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (c *tripServiceClient) CreateTrip(ctx context.Context, in *CreateTripReq, o
 // All implementations must embed UnimplementedTripServiceServer
 // for forward compatibility
 type TripServiceServer interface {
-	CreateTrip(context.Context, *CreateTripReq) (*TripServiceRsp, error)
+	CreateTrip(context.Context, *CreateTripReq) (*CreateTripRsp, error)
 	mustEmbedUnimplementedTripServiceServer()
 }
 
@@ -54,7 +54,7 @@ type TripServiceServer interface {
 type UnimplementedTripServiceServer struct {
 }
 
-func (UnimplementedTripServiceServer) CreateTrip(context.Context, *CreateTripReq) (*TripServiceRsp, error) {
+func (UnimplementedTripServiceServer) CreateTrip(context.Context, *CreateTripReq) (*CreateTripRsp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTrip not implemented")
 }
 func (UnimplementedTripServiceServer) mustEmbedUnimplementedTripServiceServer() {}

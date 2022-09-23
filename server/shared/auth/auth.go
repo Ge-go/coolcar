@@ -52,7 +52,7 @@ func (i *interceptor) HandleReq(ctx context.Context, req interface{}, info *grpc
 		return nil, status.Errorf(codes.Unauthenticated, "cannot verify token:%v", err)
 	}
 
-	return handler(ContextWithAccountID(ctx, accountID), req), nil
+	return handler(ContextWithAccountID(ctx, accountID), req)
 }
 
 // hide accountID
@@ -74,7 +74,7 @@ func tokenFromCtx(ctx context.Context) (string, error) {
 
 	token := ""
 	for _, v := range m[authHeader] {
-		if strings.HasSuffix(v, prefixKey) {
+		if strings.HasPrefix(v, prefixKey) {
 			token = v[len(prefixKey):]
 		}
 	}
