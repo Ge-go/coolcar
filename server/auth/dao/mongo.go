@@ -5,7 +5,6 @@ import (
 	mgo "coolcar/shared/mongo"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -13,27 +12,25 @@ import (
 const openIDField = "open_id"
 
 type Mongo struct {
-	col      *mongo.Collection
-	newObjID func() primitive.ObjectID
+	col *mongo.Collection
 }
 
 // NewMongo create a new mongo dao.
 func NewMongo(db *mongo.Database) *Mongo {
 	return &Mongo{
 		//用户db
-		col:      db.Collection("account"),
-		newObjID: primitive.NewObjectID,
+		col: db.Collection("account"),
 	}
 }
 
 func (m *Mongo) ResolveAccountID(ctx context.Context, openID string) (string, error) {
-	insertedID := m.newObjID()
+	insertedID := mgo.NewObjID
 
 	res := m.col.FindOneAndUpdate(ctx, bson.M{
 		openIDField: openID,
 	}, mgo.SetOnInsert(bson.M{
-		mgo.IDField: insertedID,
-		openIDField: openID,
+		mgo.IDFieldName: insertedID(),
+		openIDField:     openID,
 	}), options.FindOneAndUpdate().
 		SetUpsert(true).
 		SetReturnDocument(options.After))

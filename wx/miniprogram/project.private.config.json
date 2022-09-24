@@ -11,8 +11,8 @@
       "list": [
         {
           "name": "",
-          "pathName": "pages/pay/pay",
-          "query": "",
+          "pathName": "pages/lock/lock",
+          "query": "car_id=car123",
           "launchMode": "default",
           "scene": null
         }

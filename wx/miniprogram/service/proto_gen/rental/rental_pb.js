@@ -23,13 +23,679 @@ export const rental = $root.rental = (() => {
          */
         const v1 = {};
 
+        v1.Location = (function() {
+
+            /**
+             * Properties of a Location.
+             * @memberof rental.v1
+             * @interface ILocation
+             * @property {number|null} [latitude] Location latitude
+             * @property {number|null} [longitude] Location longitude
+             */
+
+            /**
+             * Constructs a new Location.
+             * @memberof rental.v1
+             * @classdesc Represents a Location.
+             * @implements ILocation
+             * @constructor
+             * @param {rental.v1.ILocation=} [properties] Properties to set
+             */
+            function Location(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * Location latitude.
+             * @member {number} latitude
+             * @memberof rental.v1.Location
+             * @instance
+             */
+            Location.prototype.latitude = 0;
+
+            /**
+             * Location longitude.
+             * @member {number} longitude
+             * @memberof rental.v1.Location
+             * @instance
+             */
+            Location.prototype.longitude = 0;
+
+            /**
+             * Decodes a Location message from the specified reader or buffer.
+             * @function decode
+             * @memberof rental.v1.Location
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {rental.v1.Location} Location
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Location.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.Location();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.latitude = reader.double();
+                        break;
+                    case 2:
+                        message.longitude = reader.double();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates a Location message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof rental.v1.Location
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {rental.v1.Location} Location
+             */
+            Location.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.Location)
+                    return object;
+                let message = new $root.rental.v1.Location();
+                if (object.latitude != null)
+                    message.latitude = Number(object.latitude);
+                if (object.longitude != null)
+                    message.longitude = Number(object.longitude);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a Location message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof rental.v1.Location
+             * @static
+             * @param {rental.v1.Location} message Location
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            Location.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults) {
+                    object.latitude = 0;
+                    object.longitude = 0;
+                }
+                if (message.latitude != null && message.hasOwnProperty("latitude"))
+                    object.latitude = options.json && !isFinite(message.latitude) ? String(message.latitude) : message.latitude;
+                if (message.longitude != null && message.hasOwnProperty("longitude"))
+                    object.longitude = options.json && !isFinite(message.longitude) ? String(message.longitude) : message.longitude;
+                return object;
+            };
+
+            /**
+             * Converts this Location to JSON.
+             * @function toJSON
+             * @memberof rental.v1.Location
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            Location.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return Location;
+        })();
+
+        v1.LocationStatus = (function() {
+
+            /**
+             * Properties of a LocationStatus.
+             * @memberof rental.v1
+             * @interface ILocationStatus
+             * @property {rental.v1.ILocation|null} [location] LocationStatus location
+             * @property {number|null} [feeCent] LocationStatus feeCent
+             * @property {number|null} [kmDriven] LocationStatus kmDriven
+             * @property {string|null} [poiName] LocationStatus poiName
+             */
+
+            /**
+             * Constructs a new LocationStatus.
+             * @memberof rental.v1
+             * @classdesc Represents a LocationStatus.
+             * @implements ILocationStatus
+             * @constructor
+             * @param {rental.v1.ILocationStatus=} [properties] Properties to set
+             */
+            function LocationStatus(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * LocationStatus location.
+             * @member {rental.v1.ILocation|null|undefined} location
+             * @memberof rental.v1.LocationStatus
+             * @instance
+             */
+            LocationStatus.prototype.location = null;
+
+            /**
+             * LocationStatus feeCent.
+             * @member {number} feeCent
+             * @memberof rental.v1.LocationStatus
+             * @instance
+             */
+            LocationStatus.prototype.feeCent = 0;
+
+            /**
+             * LocationStatus kmDriven.
+             * @member {number} kmDriven
+             * @memberof rental.v1.LocationStatus
+             * @instance
+             */
+            LocationStatus.prototype.kmDriven = 0;
+
+            /**
+             * LocationStatus poiName.
+             * @member {string} poiName
+             * @memberof rental.v1.LocationStatus
+             * @instance
+             */
+            LocationStatus.prototype.poiName = "";
+
+            /**
+             * Decodes a LocationStatus message from the specified reader or buffer.
+             * @function decode
+             * @memberof rental.v1.LocationStatus
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {rental.v1.LocationStatus} LocationStatus
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            LocationStatus.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.LocationStatus();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.location = $root.rental.v1.Location.decode(reader, reader.uint32());
+                        break;
+                    case 2:
+                        message.feeCent = reader.int32();
+                        break;
+                    case 3:
+                        message.kmDriven = reader.double();
+                        break;
+                    case 4:
+                        message.poiName = reader.string();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates a LocationStatus message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof rental.v1.LocationStatus
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {rental.v1.LocationStatus} LocationStatus
+             */
+            LocationStatus.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.LocationStatus)
+                    return object;
+                let message = new $root.rental.v1.LocationStatus();
+                if (object.location != null) {
+                    if (typeof object.location !== "object")
+                        throw TypeError(".rental.v1.LocationStatus.location: object expected");
+                    message.location = $root.rental.v1.Location.fromObject(object.location);
+                }
+                if (object.feeCent != null)
+                    message.feeCent = object.feeCent | 0;
+                if (object.kmDriven != null)
+                    message.kmDriven = Number(object.kmDriven);
+                if (object.poiName != null)
+                    message.poiName = String(object.poiName);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a LocationStatus message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof rental.v1.LocationStatus
+             * @static
+             * @param {rental.v1.LocationStatus} message LocationStatus
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            LocationStatus.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults) {
+                    object.location = null;
+                    object.feeCent = 0;
+                    object.kmDriven = 0;
+                    object.poiName = "";
+                }
+                if (message.location != null && message.hasOwnProperty("location"))
+                    object.location = $root.rental.v1.Location.toObject(message.location, options);
+                if (message.feeCent != null && message.hasOwnProperty("feeCent"))
+                    object.feeCent = message.feeCent;
+                if (message.kmDriven != null && message.hasOwnProperty("kmDriven"))
+                    object.kmDriven = options.json && !isFinite(message.kmDriven) ? String(message.kmDriven) : message.kmDriven;
+                if (message.poiName != null && message.hasOwnProperty("poiName"))
+                    object.poiName = message.poiName;
+                return object;
+            };
+
+            /**
+             * Converts this LocationStatus to JSON.
+             * @function toJSON
+             * @memberof rental.v1.LocationStatus
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            LocationStatus.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return LocationStatus;
+        })();
+
+        /**
+         * TripStatus enum.
+         * @name rental.v1.TripStatus
+         * @enum {number}
+         * @property {number} TS_NOT_SPECIFIED=0 TS_NOT_SPECIFIED value
+         * @property {number} IN_PROGRESS=1 IN_PROGRESS value
+         * @property {number} FINISHED=2 FINISHED value
+         */
+        v1.TripStatus = (function() {
+            const valuesById = {}, values = Object.create(valuesById);
+            values[valuesById[0] = "TS_NOT_SPECIFIED"] = 0;
+            values[valuesById[1] = "IN_PROGRESS"] = 1;
+            values[valuesById[2] = "FINISHED"] = 2;
+            return values;
+        })();
+
+        v1.TripEntity = (function() {
+
+            /**
+             * Properties of a TripEntity.
+             * @memberof rental.v1
+             * @interface ITripEntity
+             * @property {string|null} [id] TripEntity id
+             * @property {rental.v1.ITrip|null} [trip] TripEntity trip
+             */
+
+            /**
+             * Constructs a new TripEntity.
+             * @memberof rental.v1
+             * @classdesc Represents a TripEntity.
+             * @implements ITripEntity
+             * @constructor
+             * @param {rental.v1.ITripEntity=} [properties] Properties to set
+             */
+            function TripEntity(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * TripEntity id.
+             * @member {string} id
+             * @memberof rental.v1.TripEntity
+             * @instance
+             */
+            TripEntity.prototype.id = "";
+
+            /**
+             * TripEntity trip.
+             * @member {rental.v1.ITrip|null|undefined} trip
+             * @memberof rental.v1.TripEntity
+             * @instance
+             */
+            TripEntity.prototype.trip = null;
+
+            /**
+             * Decodes a TripEntity message from the specified reader or buffer.
+             * @function decode
+             * @memberof rental.v1.TripEntity
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {rental.v1.TripEntity} TripEntity
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            TripEntity.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.TripEntity();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.id = reader.string();
+                        break;
+                    case 2:
+                        message.trip = $root.rental.v1.Trip.decode(reader, reader.uint32());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates a TripEntity message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof rental.v1.TripEntity
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {rental.v1.TripEntity} TripEntity
+             */
+            TripEntity.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.TripEntity)
+                    return object;
+                let message = new $root.rental.v1.TripEntity();
+                if (object.id != null)
+                    message.id = String(object.id);
+                if (object.trip != null) {
+                    if (typeof object.trip !== "object")
+                        throw TypeError(".rental.v1.TripEntity.trip: object expected");
+                    message.trip = $root.rental.v1.Trip.fromObject(object.trip);
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a TripEntity message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof rental.v1.TripEntity
+             * @static
+             * @param {rental.v1.TripEntity} message TripEntity
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            TripEntity.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults) {
+                    object.id = "";
+                    object.trip = null;
+                }
+                if (message.id != null && message.hasOwnProperty("id"))
+                    object.id = message.id;
+                if (message.trip != null && message.hasOwnProperty("trip"))
+                    object.trip = $root.rental.v1.Trip.toObject(message.trip, options);
+                return object;
+            };
+
+            /**
+             * Converts this TripEntity to JSON.
+             * @function toJSON
+             * @memberof rental.v1.TripEntity
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            TripEntity.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return TripEntity;
+        })();
+
+        v1.Trip = (function() {
+
+            /**
+             * Properties of a Trip.
+             * @memberof rental.v1
+             * @interface ITrip
+             * @property {string|null} [accountId] Trip accountId
+             * @property {string|null} [carId] Trip carId
+             * @property {rental.v1.ILocationStatus|null} [start] Trip start
+             * @property {rental.v1.ILocationStatus|null} [current] Trip current
+             * @property {rental.v1.ILocationStatus|null} [end] Trip end
+             * @property {rental.v1.TripStatus|null} [status] Trip status
+             */
+
+            /**
+             * Constructs a new Trip.
+             * @memberof rental.v1
+             * @classdesc Represents a Trip.
+             * @implements ITrip
+             * @constructor
+             * @param {rental.v1.ITrip=} [properties] Properties to set
+             */
+            function Trip(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * Trip accountId.
+             * @member {string} accountId
+             * @memberof rental.v1.Trip
+             * @instance
+             */
+            Trip.prototype.accountId = "";
+
+            /**
+             * Trip carId.
+             * @member {string} carId
+             * @memberof rental.v1.Trip
+             * @instance
+             */
+            Trip.prototype.carId = "";
+
+            /**
+             * Trip start.
+             * @member {rental.v1.ILocationStatus|null|undefined} start
+             * @memberof rental.v1.Trip
+             * @instance
+             */
+            Trip.prototype.start = null;
+
+            /**
+             * Trip current.
+             * @member {rental.v1.ILocationStatus|null|undefined} current
+             * @memberof rental.v1.Trip
+             * @instance
+             */
+            Trip.prototype.current = null;
+
+            /**
+             * Trip end.
+             * @member {rental.v1.ILocationStatus|null|undefined} end
+             * @memberof rental.v1.Trip
+             * @instance
+             */
+            Trip.prototype.end = null;
+
+            /**
+             * Trip status.
+             * @member {rental.v1.TripStatus} status
+             * @memberof rental.v1.Trip
+             * @instance
+             */
+            Trip.prototype.status = 0;
+
+            /**
+             * Decodes a Trip message from the specified reader or buffer.
+             * @function decode
+             * @memberof rental.v1.Trip
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {rental.v1.Trip} Trip
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            Trip.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.Trip();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.accountId = reader.string();
+                        break;
+                    case 2:
+                        message.carId = reader.string();
+                        break;
+                    case 3:
+                        message.start = $root.rental.v1.LocationStatus.decode(reader, reader.uint32());
+                        break;
+                    case 4:
+                        message.current = $root.rental.v1.LocationStatus.decode(reader, reader.uint32());
+                        break;
+                    case 5:
+                        message.end = $root.rental.v1.LocationStatus.decode(reader, reader.uint32());
+                        break;
+                    case 6:
+                        message.status = reader.int32();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates a Trip message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof rental.v1.Trip
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {rental.v1.Trip} Trip
+             */
+            Trip.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.Trip)
+                    return object;
+                let message = new $root.rental.v1.Trip();
+                if (object.accountId != null)
+                    message.accountId = String(object.accountId);
+                if (object.carId != null)
+                    message.carId = String(object.carId);
+                if (object.start != null) {
+                    if (typeof object.start !== "object")
+                        throw TypeError(".rental.v1.Trip.start: object expected");
+                    message.start = $root.rental.v1.LocationStatus.fromObject(object.start);
+                }
+                if (object.current != null) {
+                    if (typeof object.current !== "object")
+                        throw TypeError(".rental.v1.Trip.current: object expected");
+                    message.current = $root.rental.v1.LocationStatus.fromObject(object.current);
+                }
+                if (object.end != null) {
+                    if (typeof object.end !== "object")
+                        throw TypeError(".rental.v1.Trip.end: object expected");
+                    message.end = $root.rental.v1.LocationStatus.fromObject(object.end);
+                }
+                switch (object.status) {
+                case "TS_NOT_SPECIFIED":
+                case 0:
+                    message.status = 0;
+                    break;
+                case "IN_PROGRESS":
+                case 1:
+                    message.status = 1;
+                    break;
+                case "FINISHED":
+                case 2:
+                    message.status = 2;
+                    break;
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a Trip message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof rental.v1.Trip
+             * @static
+             * @param {rental.v1.Trip} message Trip
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            Trip.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults) {
+                    object.accountId = "";
+                    object.carId = "";
+                    object.start = null;
+                    object.current = null;
+                    object.end = null;
+                    object.status = options.enums === String ? "TS_NOT_SPECIFIED" : 0;
+                }
+                if (message.accountId != null && message.hasOwnProperty("accountId"))
+                    object.accountId = message.accountId;
+                if (message.carId != null && message.hasOwnProperty("carId"))
+                    object.carId = message.carId;
+                if (message.start != null && message.hasOwnProperty("start"))
+                    object.start = $root.rental.v1.LocationStatus.toObject(message.start, options);
+                if (message.current != null && message.hasOwnProperty("current"))
+                    object.current = $root.rental.v1.LocationStatus.toObject(message.current, options);
+                if (message.end != null && message.hasOwnProperty("end"))
+                    object.end = $root.rental.v1.LocationStatus.toObject(message.end, options);
+                if (message.status != null && message.hasOwnProperty("status"))
+                    object.status = options.enums === String ? $root.rental.v1.TripStatus[message.status] : message.status;
+                return object;
+            };
+
+            /**
+             * Converts this Trip to JSON.
+             * @function toJSON
+             * @memberof rental.v1.Trip
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            Trip.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return Trip;
+        })();
+
         v1.CreateTripReq = (function() {
 
             /**
              * Properties of a CreateTripReq.
              * @memberof rental.v1
              * @interface ICreateTripReq
-             * @property {string|null} [start] CreateTripReq start
+             * @property {rental.v1.ILocation|null} [start] CreateTripReq start
+             * @property {string|null} [carId] CreateTripReq carId
              */
 
             /**
@@ -49,11 +715,19 @@ export const rental = $root.rental = (() => {
 
             /**
              * CreateTripReq start.
-             * @member {string} start
+             * @member {rental.v1.ILocation|null|undefined} start
              * @memberof rental.v1.CreateTripReq
              * @instance
              */
-            CreateTripReq.prototype.start = "";
+            CreateTripReq.prototype.start = null;
+
+            /**
+             * CreateTripReq carId.
+             * @member {string} carId
+             * @memberof rental.v1.CreateTripReq
+             * @instance
+             */
+            CreateTripReq.prototype.carId = "";
 
             /**
              * Decodes a CreateTripReq message from the specified reader or buffer.
@@ -74,7 +748,10 @@ export const rental = $root.rental = (() => {
                     let tag = reader.uint32();
                     switch (tag >>> 3) {
                     case 1:
-                        message.start = reader.string();
+                        message.start = $root.rental.v1.Location.decode(reader, reader.uint32());
+                        break;
+                    case 2:
+                        message.carId = reader.string();
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -96,8 +773,13 @@ export const rental = $root.rental = (() => {
                 if (object instanceof $root.rental.v1.CreateTripReq)
                     return object;
                 let message = new $root.rental.v1.CreateTripReq();
-                if (object.start != null)
-                    message.start = String(object.start);
+                if (object.start != null) {
+                    if (typeof object.start !== "object")
+                        throw TypeError(".rental.v1.CreateTripReq.start: object expected");
+                    message.start = $root.rental.v1.Location.fromObject(object.start);
+                }
+                if (object.carId != null)
+                    message.carId = String(object.carId);
                 return message;
             };
 
@@ -114,10 +796,14 @@ export const rental = $root.rental = (() => {
                 if (!options)
                     options = {};
                 let object = {};
-                if (options.defaults)
-                    object.start = "";
+                if (options.defaults) {
+                    object.start = null;
+                    object.carId = "";
+                }
                 if (message.start != null && message.hasOwnProperty("start"))
-                    object.start = message.start;
+                    object.start = $root.rental.v1.Location.toObject(message.start, options);
+                if (message.carId != null && message.hasOwnProperty("carId"))
+                    object.carId = message.carId;
                 return object;
             };
 
@@ -135,23 +821,24 @@ export const rental = $root.rental = (() => {
             return CreateTripReq;
         })();
 
-        v1.CreateTripRsp = (function() {
+        v1.GetTripReq = (function() {
 
             /**
-             * Properties of a CreateTripRsp.
+             * Properties of a GetTripReq.
              * @memberof rental.v1
-             * @interface ICreateTripRsp
+             * @interface IGetTripReq
+             * @property {string|null} [id] GetTripReq id
              */
 
             /**
-             * Constructs a new CreateTripRsp.
+             * Constructs a new GetTripReq.
              * @memberof rental.v1
-             * @classdesc Represents a CreateTripRsp.
-             * @implements ICreateTripRsp
+             * @classdesc Represents a GetTripReq.
+             * @implements IGetTripReq
              * @constructor
-             * @param {rental.v1.ICreateTripRsp=} [properties] Properties to set
+             * @param {rental.v1.IGetTripReq=} [properties] Properties to set
              */
-            function CreateTripRsp(properties) {
+            function GetTripReq(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                         if (properties[keys[i]] != null)
@@ -159,23 +846,34 @@ export const rental = $root.rental = (() => {
             }
 
             /**
-             * Decodes a CreateTripRsp message from the specified reader or buffer.
+             * GetTripReq id.
+             * @member {string} id
+             * @memberof rental.v1.GetTripReq
+             * @instance
+             */
+            GetTripReq.prototype.id = "";
+
+            /**
+             * Decodes a GetTripReq message from the specified reader or buffer.
              * @function decode
-             * @memberof rental.v1.CreateTripRsp
+             * @memberof rental.v1.GetTripReq
              * @static
              * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
              * @param {number} [length] Message length if known beforehand
-             * @returns {rental.v1.CreateTripRsp} CreateTripRsp
+             * @returns {rental.v1.GetTripReq} GetTripReq
              * @throws {Error} If the payload is not a reader or valid buffer
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
-            CreateTripRsp.decode = function decode(reader, length) {
+            GetTripReq.decode = function decode(reader, length) {
                 if (!(reader instanceof $Reader))
                     reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.CreateTripRsp();
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.GetTripReq();
                 while (reader.pos < end) {
                     let tag = reader.uint32();
                     switch (tag >>> 3) {
+                    case 1:
+                        message.id = reader.string();
+                        break;
                     default:
                         reader.skipType(tag & 7);
                         break;
@@ -185,44 +883,454 @@ export const rental = $root.rental = (() => {
             };
 
             /**
-             * Creates a CreateTripRsp message from a plain object. Also converts values to their respective internal types.
+             * Creates a GetTripReq message from a plain object. Also converts values to their respective internal types.
              * @function fromObject
-             * @memberof rental.v1.CreateTripRsp
+             * @memberof rental.v1.GetTripReq
              * @static
              * @param {Object.<string,*>} object Plain object
-             * @returns {rental.v1.CreateTripRsp} CreateTripRsp
+             * @returns {rental.v1.GetTripReq} GetTripReq
              */
-            CreateTripRsp.fromObject = function fromObject(object) {
-                if (object instanceof $root.rental.v1.CreateTripRsp)
+            GetTripReq.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.GetTripReq)
                     return object;
-                return new $root.rental.v1.CreateTripRsp();
+                let message = new $root.rental.v1.GetTripReq();
+                if (object.id != null)
+                    message.id = String(object.id);
+                return message;
             };
 
             /**
-             * Creates a plain object from a CreateTripRsp message. Also converts values to other types if specified.
+             * Creates a plain object from a GetTripReq message. Also converts values to other types if specified.
              * @function toObject
-             * @memberof rental.v1.CreateTripRsp
+             * @memberof rental.v1.GetTripReq
              * @static
-             * @param {rental.v1.CreateTripRsp} message CreateTripRsp
+             * @param {rental.v1.GetTripReq} message GetTripReq
              * @param {$protobuf.IConversionOptions} [options] Conversion options
              * @returns {Object.<string,*>} Plain object
              */
-            CreateTripRsp.toObject = function toObject() {
-                return {};
+            GetTripReq.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults)
+                    object.id = "";
+                if (message.id != null && message.hasOwnProperty("id"))
+                    object.id = message.id;
+                return object;
             };
 
             /**
-             * Converts this CreateTripRsp to JSON.
+             * Converts this GetTripReq to JSON.
              * @function toJSON
-             * @memberof rental.v1.CreateTripRsp
+             * @memberof rental.v1.GetTripReq
              * @instance
              * @returns {Object.<string,*>} JSON object
              */
-            CreateTripRsp.prototype.toJSON = function toJSON() {
+            GetTripReq.prototype.toJSON = function toJSON() {
                 return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
             };
 
-            return CreateTripRsp;
+            return GetTripReq;
+        })();
+
+        v1.GetTripsReq = (function() {
+
+            /**
+             * Properties of a GetTripsReq.
+             * @memberof rental.v1
+             * @interface IGetTripsReq
+             * @property {rental.v1.TripStatus|null} [status] GetTripsReq status
+             */
+
+            /**
+             * Constructs a new GetTripsReq.
+             * @memberof rental.v1
+             * @classdesc Represents a GetTripsReq.
+             * @implements IGetTripsReq
+             * @constructor
+             * @param {rental.v1.IGetTripsReq=} [properties] Properties to set
+             */
+            function GetTripsReq(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * GetTripsReq status.
+             * @member {rental.v1.TripStatus} status
+             * @memberof rental.v1.GetTripsReq
+             * @instance
+             */
+            GetTripsReq.prototype.status = 0;
+
+            /**
+             * Decodes a GetTripsReq message from the specified reader or buffer.
+             * @function decode
+             * @memberof rental.v1.GetTripsReq
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {rental.v1.GetTripsReq} GetTripsReq
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetTripsReq.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.GetTripsReq();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.status = reader.int32();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates a GetTripsReq message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof rental.v1.GetTripsReq
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {rental.v1.GetTripsReq} GetTripsReq
+             */
+            GetTripsReq.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.GetTripsReq)
+                    return object;
+                let message = new $root.rental.v1.GetTripsReq();
+                switch (object.status) {
+                case "TS_NOT_SPECIFIED":
+                case 0:
+                    message.status = 0;
+                    break;
+                case "IN_PROGRESS":
+                case 1:
+                    message.status = 1;
+                    break;
+                case "FINISHED":
+                case 2:
+                    message.status = 2;
+                    break;
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a GetTripsReq message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof rental.v1.GetTripsReq
+             * @static
+             * @param {rental.v1.GetTripsReq} message GetTripsReq
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            GetTripsReq.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults)
+                    object.status = options.enums === String ? "TS_NOT_SPECIFIED" : 0;
+                if (message.status != null && message.hasOwnProperty("status"))
+                    object.status = options.enums === String ? $root.rental.v1.TripStatus[message.status] : message.status;
+                return object;
+            };
+
+            /**
+             * Converts this GetTripsReq to JSON.
+             * @function toJSON
+             * @memberof rental.v1.GetTripsReq
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            GetTripsReq.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return GetTripsReq;
+        })();
+
+        v1.GetTripsRsp = (function() {
+
+            /**
+             * Properties of a GetTripsRsp.
+             * @memberof rental.v1
+             * @interface IGetTripsRsp
+             * @property {Array.<rental.v1.ITripEntity>|null} [trips] GetTripsRsp trips
+             */
+
+            /**
+             * Constructs a new GetTripsRsp.
+             * @memberof rental.v1
+             * @classdesc Represents a GetTripsRsp.
+             * @implements IGetTripsRsp
+             * @constructor
+             * @param {rental.v1.IGetTripsRsp=} [properties] Properties to set
+             */
+            function GetTripsRsp(properties) {
+                this.trips = [];
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * GetTripsRsp trips.
+             * @member {Array.<rental.v1.ITripEntity>} trips
+             * @memberof rental.v1.GetTripsRsp
+             * @instance
+             */
+            GetTripsRsp.prototype.trips = $util.emptyArray;
+
+            /**
+             * Decodes a GetTripsRsp message from the specified reader or buffer.
+             * @function decode
+             * @memberof rental.v1.GetTripsRsp
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {rental.v1.GetTripsRsp} GetTripsRsp
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            GetTripsRsp.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.GetTripsRsp();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        if (!(message.trips && message.trips.length))
+                            message.trips = [];
+                        message.trips.push($root.rental.v1.TripEntity.decode(reader, reader.uint32()));
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates a GetTripsRsp message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof rental.v1.GetTripsRsp
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {rental.v1.GetTripsRsp} GetTripsRsp
+             */
+            GetTripsRsp.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.GetTripsRsp)
+                    return object;
+                let message = new $root.rental.v1.GetTripsRsp();
+                if (object.trips) {
+                    if (!Array.isArray(object.trips))
+                        throw TypeError(".rental.v1.GetTripsRsp.trips: array expected");
+                    message.trips = [];
+                    for (let i = 0; i < object.trips.length; ++i) {
+                        if (typeof object.trips[i] !== "object")
+                            throw TypeError(".rental.v1.GetTripsRsp.trips: object expected");
+                        message.trips[i] = $root.rental.v1.TripEntity.fromObject(object.trips[i]);
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates a plain object from a GetTripsRsp message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof rental.v1.GetTripsRsp
+             * @static
+             * @param {rental.v1.GetTripsRsp} message GetTripsRsp
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            GetTripsRsp.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.arrays || options.defaults)
+                    object.trips = [];
+                if (message.trips && message.trips.length) {
+                    object.trips = [];
+                    for (let j = 0; j < message.trips.length; ++j)
+                        object.trips[j] = $root.rental.v1.TripEntity.toObject(message.trips[j], options);
+                }
+                return object;
+            };
+
+            /**
+             * Converts this GetTripsRsp to JSON.
+             * @function toJSON
+             * @memberof rental.v1.GetTripsRsp
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            GetTripsRsp.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return GetTripsRsp;
+        })();
+
+        v1.UpdateTripReq = (function() {
+
+            /**
+             * Properties of an UpdateTripReq.
+             * @memberof rental.v1
+             * @interface IUpdateTripReq
+             * @property {string|null} [id] UpdateTripReq id
+             * @property {rental.v1.ILocation|null} [current] UpdateTripReq current
+             * @property {boolean|null} [endTrip] UpdateTripReq endTrip
+             */
+
+            /**
+             * Constructs a new UpdateTripReq.
+             * @memberof rental.v1
+             * @classdesc Represents an UpdateTripReq.
+             * @implements IUpdateTripReq
+             * @constructor
+             * @param {rental.v1.IUpdateTripReq=} [properties] Properties to set
+             */
+            function UpdateTripReq(properties) {
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * UpdateTripReq id.
+             * @member {string} id
+             * @memberof rental.v1.UpdateTripReq
+             * @instance
+             */
+            UpdateTripReq.prototype.id = "";
+
+            /**
+             * UpdateTripReq current.
+             * @member {rental.v1.ILocation|null|undefined} current
+             * @memberof rental.v1.UpdateTripReq
+             * @instance
+             */
+            UpdateTripReq.prototype.current = null;
+
+            /**
+             * UpdateTripReq endTrip.
+             * @member {boolean} endTrip
+             * @memberof rental.v1.UpdateTripReq
+             * @instance
+             */
+            UpdateTripReq.prototype.endTrip = false;
+
+            /**
+             * Decodes an UpdateTripReq message from the specified reader or buffer.
+             * @function decode
+             * @memberof rental.v1.UpdateTripReq
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {rental.v1.UpdateTripReq} UpdateTripReq
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            UpdateTripReq.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rental.v1.UpdateTripReq();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        message.id = reader.string();
+                        break;
+                    case 2:
+                        message.current = $root.rental.v1.Location.decode(reader, reader.uint32());
+                        break;
+                    case 3:
+                        message.endTrip = reader.bool();
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            /**
+             * Creates an UpdateTripReq message from a plain object. Also converts values to their respective internal types.
+             * @function fromObject
+             * @memberof rental.v1.UpdateTripReq
+             * @static
+             * @param {Object.<string,*>} object Plain object
+             * @returns {rental.v1.UpdateTripReq} UpdateTripReq
+             */
+            UpdateTripReq.fromObject = function fromObject(object) {
+                if (object instanceof $root.rental.v1.UpdateTripReq)
+                    return object;
+                let message = new $root.rental.v1.UpdateTripReq();
+                if (object.id != null)
+                    message.id = String(object.id);
+                if (object.current != null) {
+                    if (typeof object.current !== "object")
+                        throw TypeError(".rental.v1.UpdateTripReq.current: object expected");
+                    message.current = $root.rental.v1.Location.fromObject(object.current);
+                }
+                if (object.endTrip != null)
+                    message.endTrip = Boolean(object.endTrip);
+                return message;
+            };
+
+            /**
+             * Creates a plain object from an UpdateTripReq message. Also converts values to other types if specified.
+             * @function toObject
+             * @memberof rental.v1.UpdateTripReq
+             * @static
+             * @param {rental.v1.UpdateTripReq} message UpdateTripReq
+             * @param {$protobuf.IConversionOptions} [options] Conversion options
+             * @returns {Object.<string,*>} Plain object
+             */
+            UpdateTripReq.toObject = function toObject(message, options) {
+                if (!options)
+                    options = {};
+                let object = {};
+                if (options.defaults) {
+                    object.id = "";
+                    object.current = null;
+                    object.endTrip = false;
+                }
+                if (message.id != null && message.hasOwnProperty("id"))
+                    object.id = message.id;
+                if (message.current != null && message.hasOwnProperty("current"))
+                    object.current = $root.rental.v1.Location.toObject(message.current, options);
+                if (message.endTrip != null && message.hasOwnProperty("endTrip"))
+                    object.endTrip = message.endTrip;
+                return object;
+            };
+
+            /**
+             * Converts this UpdateTripReq to JSON.
+             * @function toJSON
+             * @memberof rental.v1.UpdateTripReq
+             * @instance
+             * @returns {Object.<string,*>} JSON object
+             */
+            UpdateTripReq.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+            };
+
+            return UpdateTripReq;
         })();
 
         v1.TripService = (function() {
@@ -249,7 +1357,7 @@ export const rental = $root.rental = (() => {
              * @typedef CreateTripCallback
              * @type {function}
              * @param {Error|null} error Error, if any
-             * @param {rental.v1.CreateTripRsp} [response] CreateTripRsp
+             * @param {rental.v1.TripEntity} [response] TripEntity
              */
 
             /**
@@ -258,12 +1366,12 @@ export const rental = $root.rental = (() => {
              * @memberof rental.v1.TripService
              * @instance
              * @param {rental.v1.ICreateTripReq} request CreateTripReq message or plain object
-             * @param {rental.v1.TripService.CreateTripCallback} callback Node-style callback called with the error, if any, and CreateTripRsp
+             * @param {rental.v1.TripService.CreateTripCallback} callback Node-style callback called with the error, if any, and TripEntity
              * @returns {undefined}
              * @variation 1
              */
             Object.defineProperty(TripService.prototype.createTrip = function createTrip(request, callback) {
-                return this.rpcCall(createTrip, $root.rental.v1.CreateTripReq, $root.rental.v1.CreateTripRsp, request, callback);
+                return this.rpcCall(createTrip, $root.rental.v1.CreateTripReq, $root.rental.v1.TripEntity, request, callback);
             }, "name", { value: "CreateTrip" });
 
             /**
@@ -272,7 +1380,106 @@ export const rental = $root.rental = (() => {
              * @memberof rental.v1.TripService
              * @instance
              * @param {rental.v1.ICreateTripReq} request CreateTripReq message or plain object
-             * @returns {Promise<rental.v1.CreateTripRsp>} Promise
+             * @returns {Promise<rental.v1.TripEntity>} Promise
+             * @variation 2
+             */
+
+            /**
+             * Callback as used by {@link rental.v1.TripService#getTrip}.
+             * @memberof rental.v1.TripService
+             * @typedef GetTripCallback
+             * @type {function}
+             * @param {Error|null} error Error, if any
+             * @param {rental.v1.Trip} [response] Trip
+             */
+
+            /**
+             * Calls GetTrip.
+             * @function getTrip
+             * @memberof rental.v1.TripService
+             * @instance
+             * @param {rental.v1.IGetTripReq} request GetTripReq message or plain object
+             * @param {rental.v1.TripService.GetTripCallback} callback Node-style callback called with the error, if any, and Trip
+             * @returns {undefined}
+             * @variation 1
+             */
+            Object.defineProperty(TripService.prototype.getTrip = function getTrip(request, callback) {
+                return this.rpcCall(getTrip, $root.rental.v1.GetTripReq, $root.rental.v1.Trip, request, callback);
+            }, "name", { value: "GetTrip" });
+
+            /**
+             * Calls GetTrip.
+             * @function getTrip
+             * @memberof rental.v1.TripService
+             * @instance
+             * @param {rental.v1.IGetTripReq} request GetTripReq message or plain object
+             * @returns {Promise<rental.v1.Trip>} Promise
+             * @variation 2
+             */
+
+            /**
+             * Callback as used by {@link rental.v1.TripService#getTrips}.
+             * @memberof rental.v1.TripService
+             * @typedef GetTripsCallback
+             * @type {function}
+             * @param {Error|null} error Error, if any
+             * @param {rental.v1.GetTripsRsp} [response] GetTripsRsp
+             */
+
+            /**
+             * Calls GetTrips.
+             * @function getTrips
+             * @memberof rental.v1.TripService
+             * @instance
+             * @param {rental.v1.IGetTripsReq} request GetTripsReq message or plain object
+             * @param {rental.v1.TripService.GetTripsCallback} callback Node-style callback called with the error, if any, and GetTripsRsp
+             * @returns {undefined}
+             * @variation 1
+             */
+            Object.defineProperty(TripService.prototype.getTrips = function getTrips(request, callback) {
+                return this.rpcCall(getTrips, $root.rental.v1.GetTripsReq, $root.rental.v1.GetTripsRsp, request, callback);
+            }, "name", { value: "GetTrips" });
+
+            /**
+             * Calls GetTrips.
+             * @function getTrips
+             * @memberof rental.v1.TripService
+             * @instance
+             * @param {rental.v1.IGetTripsReq} request GetTripsReq message or plain object
+             * @returns {Promise<rental.v1.GetTripsRsp>} Promise
+             * @variation 2
+             */
+
+            /**
+             * Callback as used by {@link rental.v1.TripService#updateTrip}.
+             * @memberof rental.v1.TripService
+             * @typedef UpdateTripCallback
+             * @type {function}
+             * @param {Error|null} error Error, if any
+             * @param {rental.v1.Trip} [response] Trip
+             */
+
+            /**
+             * Calls UpdateTrip.
+             * @function updateTrip
+             * @memberof rental.v1.TripService
+             * @instance
+             * @param {rental.v1.IUpdateTripReq} request UpdateTripReq message or plain object
+             * @param {rental.v1.TripService.UpdateTripCallback} callback Node-style callback called with the error, if any, and Trip
+             * @returns {undefined}
+             * @variation 1
+             */
+            Object.defineProperty(TripService.prototype.updateTrip = function updateTrip(request, callback) {
+                return this.rpcCall(updateTrip, $root.rental.v1.UpdateTripReq, $root.rental.v1.Trip, request, callback);
+            }, "name", { value: "UpdateTrip" });
+
+            /**
+             * Calls UpdateTrip.
+             * @function updateTrip
+             * @memberof rental.v1.TripService
+             * @instance
+             * @param {rental.v1.IUpdateTripReq} request UpdateTripReq message or plain object
+             * @returns {Promise<rental.v1.Trip>} Promise
              * @variation 2
              */
 

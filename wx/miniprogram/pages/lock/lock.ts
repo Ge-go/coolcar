@@ -1,3 +1,4 @@
+import { TripService } from "../../service/trip"
 import { routing } from "../../utils/routing"
 
 const shareLocationKey = "share_Location"
@@ -40,6 +41,9 @@ Page({
           },
           //TODO:  这里的数据要进行处理的,用户是否要展示头像
           avatarURL: this.data.shareLocation ? this.data.avatarURL : '',
+        })
+        TripService.createTrip({
+          start: 'trip123',
         })
         //成功后,开锁
         wx.showLoading({

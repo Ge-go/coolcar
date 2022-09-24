@@ -3,13 +3,67 @@ syntax = "proto3";
 package rental.v1;
 option go_package = "coolcar/auth/api/gen/v1;rentalpb";
 
-message CreateTripReq {
-  string start = 1;
+//坐标
+message Location{
+  double latitude = 1;
+  double longitude = 2;
 }
 
-message  CreateTripRsp{
+//当前坐标状态
+message LocationStatus {
+  Location location = 1;
+  int32 fee_cent = 2;
+  double km_driven = 3;
+  string poi_name = 4;  //当前坐标可识别name
+}
+
+enum TripStatus {
+  TS_NOT_SPECIFIED = 0;  //未开启行程
+  IN_PROGRESS = 1;  //已开启行程
+  FINISHED = 2; // 完成行程
+}
+
+// Trip 实体
+message TripEntity {
+  string id = 1;
+  Trip trip = 2;
+}
+
+message Trip {
+  string account_id = 1;
+  string car_id = 2;
+  LocationStatus start = 3;
+  LocationStatus current = 4;
+  LocationStatus end = 5;
+  TripStatus status = 6;
+}
+
+message CreateTripReq {
+  Location start = 1;
+  string car_id = 2;
+}
+
+message GetTripReq {
+  string id = 1;
+}
+
+message GetTripsReq {
+  TripStatus status = 1;
+}
+
+message GetTripsRsp {
+  repeated TripEntity trips = 1;
+}
+
+message UpdateTripReq {
+  string id = 1;
+  Location current = 2;
+  bool end_trip = 3;
 }
 
 service TripService {
-  rpc CreateTrip(CreateTripReq) returns (CreateTripRsp);
+  rpc CreateTrip(CreateTripReq) returns (TripEntity);
+  rpc GetTrip(GetTripReq) returns (Trip);
+  rpc GetTrips (GetTripsReq) returns (GetTripsRsp);
+  rpc UpdateTrip(UpdateTripReq) returns (Trip);
 }
