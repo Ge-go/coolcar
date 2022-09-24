@@ -52,15 +52,22 @@ func (i *interceptor) HandleReq(ctx context.Context, req interface{}, info *grpc
 		return nil, status.Errorf(codes.Unauthenticated, "cannot verify token:%v", err)
 	}
 
-	return handler(ContextWithAccountID(ctx, accountID), req)
+	return handler(ContextWithAccountID(ctx, AccountID(accountID)), req)
 }
 
 // hide accountID
 type accountIDKey struct {
 }
 
+// AccountID defines account id object.
+type AccountID string
+
+func (a AccountID) String() string {
+	return string(a)
+}
+
 // ContextWithAccountID carry aid to req
-func ContextWithAccountID(ctx context.Context, aid string) context.Context {
+func ContextWithAccountID(ctx context.Context, aid AccountID) context.Context {
 	return context.WithValue(ctx, accountIDKey{}, aid)
 }
 
@@ -87,9 +94,9 @@ func tokenFromCtx(ctx context.Context) (string, error) {
 
 // AccountIDFromContext gets account id from context
 // Returns unauthenticated error if no account id is available
-func AccountIDFromContext(ctx context.Context) (string, error) {
+func AccountIDFromContext(ctx context.Context) (AccountID, error) {
 	v := ctx.Value(accountIDKey{})
-	aid, ok := v.(string)
+	aid, ok := v.(AccountID)
 	if !ok {
 		return "", status.Error(codes.Unauthenticated, "")
 	}

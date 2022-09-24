@@ -17,6 +17,6 @@ func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (
 	if err != nil {
 		return nil, err
 	}
-	s.Log.Info("is in createTrip", zap.String("token to accountId ", aid))
+	s.Log.Info("is in createTrip", zap.String("token to accountId ", aid.String()))
 	return &rentalpb.CreateTripRsp{}, nil
 }

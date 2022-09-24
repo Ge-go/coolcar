@@ -1,36 +1,29 @@
 package main
 
 import (
-	"context"
 	rentalpb "coolcar/rental/api/gen/v1"
 	"coolcar/rental/trip"
-	"coolcar/shared/auth"
-	"net"
-
-	"go.uber.org/zap"
-	"google.golang.org/appengine/log"
+	"coolcar/shared/server"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
+	logger, err := server.NewZapLogger()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	lis, err := net.Listen("tcp", ":8082")
-
-	interceptor, err := auth.Interceptor(publicKey)
-	if err != nil {
-		log.Errorf(context.Background(), "cannot interceptor:%v", err)
-	}
-	s := grpc.NewServer(grpc.UnaryInterceptor(interceptor))
-
-	rentalpb.RegisterTripServiceServer(s, &trip.Service{
-		Log: logger,
-	})
-
-	s.Serve(lis)
+	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
+		RSAPublicKey: publicKey,
+		Name:         "rental",
+		Addr:         ":8082",
+		Logger:       logger,
+		RegisterFunc: func(s *grpc.Server) {
+			rentalpb.RegisterTripServiceServer(s, &trip.Service{
+				Log: logger,
+			})
+		},
+	}))
 }
 
 const publicKey = `-----BEGIN PUBLIC KEY-----

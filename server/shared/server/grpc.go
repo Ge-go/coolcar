@@ -2,8 +2,6 @@ package server
 
 import (
 	"context"
-	rentalpb "coolcar/rental/api/gen/v1"
-	"coolcar/rental/trip"
 	"coolcar/shared/auth"
 	"go.uber.org/zap"
 	"google.golang.org/appengine/log"
@@ -13,28 +11,35 @@ import (
 
 type GRPCConfig struct {
 	RSAPublicKey string
+	Name         string
+	Addr         string
+	Logger       *zap.Logger
+	RegisterFunc func(server *grpc.Server)
 }
 
 func GRPCServer(config *GRPCConfig) error {
-	logger, err := zap.NewDevelopment()
+	nameField := zap.String("name", config.Name)
+
+	lis, err := net.Listen("tcp", config.Addr)
+
 	if err != nil {
-		panic(err.Error())
+		config.Logger.Fatal("cannot listen ", nameField, zap.Error(err))
 	}
 
-	lis, err := net.Listen("tcp", ":8082")
-
+	var opts []grpc.ServerOption
 	if config.RSAPublicKey != "" {
 		interceptor, err := auth.Interceptor(config.RSAPublicKey)
 		if err != nil {
 			log.Errorf(context.Background(), "cannot interceptor:%v", err)
 		}
+		opts = append(opts, grpc.UnaryInterceptor(interceptor))
 	}
 
-	s := grpc.NewServer(grpc.UnaryInterceptor(interceptor))
+	s := grpc.NewServer(opts...)
 
-	rentalpb.RegisterTripServiceServer(s, &trip.Service{
-		Log: logger,
-	})
+	config.RegisterFunc(s)
 
-	s.Serve(lis)
+	config.Logger.Info("server started ", nameField, zap.String("addr", config.Addr))
+
+	return s.Serve(lis)
 }

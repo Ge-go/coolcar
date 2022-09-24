@@ -4,6 +4,7 @@ import (
 	"context"
 	authpb "coolcar/auth/api/gen/v1"
 	rentalpb "coolcar/rental/api/gen/v1"
+	"coolcar/shared/server"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -13,6 +14,10 @@ import (
 
 //启动gateWay服务
 func main() {
+	logger, err := server.NewZapLogger()
+	if err != nil {
+		log.Fatalf("cannot create zap logger:%v", err)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	mux := runtime.NewServeMux(runtime.WithMarshalerOption(
@@ -28,22 +33,32 @@ func main() {
 		},
 	))
 
-	//RegisterAuthServiceHandler 和下列方法相似,但是,我们使用的时候,要去掉安全校验
-	err := authpb.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, "localhost:8081", []grpc.DialOption{
-		grpc.WithInsecure(),
-	})
-
-	if err != nil {
-		log.Fatalf("cannot register auth service: %v", err)
+	serverConfig := []struct {
+		name         string
+		addr         string
+		registerFunc func(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error)
+	}{
+		{
+			name:         "auth",
+			addr:         "localhost:8081",
+			registerFunc: authpb.RegisterAuthServiceHandlerFromEndpoint,
+		},
+		{
+			name:         "rental",
+			addr:         "localhost:8082",
+			registerFunc: rentalpb.RegisterTripServiceHandlerFromEndpoint,
+		},
 	}
 
-	err = rentalpb.RegisterTripServiceHandlerFromEndpoint(ctx, mux, "localhost:8082", []grpc.DialOption{
-		grpc.WithInsecure(),
-	})
-
-	if err != nil {
-		log.Fatalf("cannot register auth service: %v", err)
+	for _, v := range serverConfig {
+		err := v.registerFunc(ctx, mux, v.addr, []grpc.DialOption{grpc.WithInsecure()})
+		if err != nil {
+			logger.Sugar().Fatalf("cannot register auth service: %v", err)
+		}
 	}
 
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	addr := ":8080"
+	logger.Sugar().Infof("grpc gateway started at %s", addr)
+
+	logger.Sugar().Fatal(http.ListenAndServe(addr, mux))
 }

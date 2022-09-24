@@ -58,10 +58,3 @@ func (s *Service) Login(ctx context.Context, req *authpb.LoginReq) (*authpb.Logi
 		ExpiresIn:   int32(s.TokenExpire),
 	}, nil
 }
-
-//改变日志格式
-func newZapLogger() (*zap.Logger, error) {
-	cfg := zap.NewDevelopmentConfig()
-	cfg.EncoderConfig.TimeKey = ""
-	return cfg.Build()
-}

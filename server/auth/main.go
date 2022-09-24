@@ -7,24 +7,20 @@ import (
 	"coolcar/auth/dao"
 	"coolcar/auth/token"
 	"coolcar/auth/wechat"
+	"coolcar/shared/server"
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"log"
-	"net"
 	"time"
 )
 
 func main() {
-	logger, err := zap.NewDevelopment()
+	logger, err := server.NewZapLogger()
 	if err != nil {
 		panic(err.Error())
 	}
-
-	lis, err := net.Listen("tcp", ":8081")
-	s := grpc.NewServer()
 
 	mgClient, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://121.37.232.8:27019/coolcar?readPreference=primary&ssl=false"))
 	if err != nil {
@@ -36,18 +32,23 @@ func main() {
 		log.Fatalf("cantnot parse RSA prvKey:%v", err)
 	}
 
-	authpb.RegisterAuthServiceServer(s, &auth.Service{
-		Log: logger,
-		ResolveOpenID: &wechat.Service{
-			AppID:  "wx32e1737ca7ca35ee",
-			Secret: "15edba49c62d8781f9a5c8a0f4d83025",
+	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
+		Name:   "auth",
+		Addr:   ":8081",
+		Logger: logger,
+		RegisterFunc: func(s *grpc.Server) {
+			authpb.RegisterAuthServiceServer(s, &auth.Service{
+				Log: logger,
+				ResolveOpenID: &wechat.Service{
+					AppID:  "wx32e1737ca7ca35ee",
+					Secret: "15edba49c62d8781f9a5c8a0f4d83025",
+				},
+				Mongo:         dao.NewMongo(mgClient.Database("coolcar")),
+				GenerateToken: token.NewJWTToken("coolcar/auth", prvKey),
+				TokenExpire:   2 * time.Hour,
+			})
 		},
-		Mongo:         dao.NewMongo(mgClient.Database("coolcar")),
-		GenerateToken: token.NewJWTToken("coolcar/auth", prvKey),
-		TokenExpire:   2 * time.Hour,
-	})
-
-	s.Serve(lis)
+	}))
 }
 
 const PrivateKey = `-----BEGIN RSA PRIVATE KEY-----
