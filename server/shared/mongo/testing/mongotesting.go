@@ -17,9 +17,6 @@ const (
 
 func RunWithMongoInDocker(m *testing.M, mongoURI *string) int {
 	c, err := client.NewClientWithOpts()
-	if err != nil {
-		panic(err)
-	}
 
 	resp, err := c.ContainerCreate(context.Background(), &container.Config{
 		Image: image,
@@ -30,7 +27,7 @@ func RunWithMongoInDocker(m *testing.M, mongoURI *string) int {
 		PortBindings: nat.PortMap{
 			containerPort: []nat.PortBinding{
 				{
-					HostIP:   "127.0.0.1",
+					HostIP:   "0.0.0.0",
 					HostPort: "0", //自动挑一个端口
 				},
 			},
