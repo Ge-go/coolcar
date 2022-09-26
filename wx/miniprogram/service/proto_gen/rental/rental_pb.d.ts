@@ -215,6 +215,9 @@ export namespace rental {
 
             /** Trip status */
             status?: (rental.v1.TripStatus|null);
+
+            /** Trip identityId */
+            identityId?: (string|null);
         }
 
         /** Represents a Trip. */
@@ -243,6 +246,9 @@ export namespace rental {
 
             /** Trip status. */
             public status: rental.v1.TripStatus;
+
+            /** Trip identityId. */
+            public identityId: string;
 
             /**
              * Decodes a Trip message from the specified reader or buffer.

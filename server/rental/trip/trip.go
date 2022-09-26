@@ -12,11 +12,30 @@ import (
 )
 
 type Service struct {
-	Log   *zap.Logger
-	Mongo *dao.Mongo
+	ProfileManager ProfileManager
+	Log            *zap.Logger
+	Mongo          *dao.Mongo
+}
+
+// ProfileManager defines the ACL (Anti Corruption Layer)访问控制,防止领域入侵
+// for profile verification logic.
+type ProfileManager interface {
+	Verify(context.Context, id.AccountID) (id.Identity, error)
 }
 
 func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (*rentalpb.TripEntity, error) {
+	aid, err := auth.AccountIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	//验证驾驶者身份
+	iID, err := s.ProfileManager.Verify(ctx, aid)
+	if err != nil {
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+	//车辆开锁
+	//创建形成,入库计费 (思考,这里如何做到一致性)
+
 	panic("implement me")
 }
 
