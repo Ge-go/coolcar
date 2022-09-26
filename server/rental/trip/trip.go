@@ -12,8 +12,8 @@ import (
 )
 
 type Service struct {
-	Log *zap.Logger
-	col *dao.Mongo
+	Log   *zap.Logger
+	Mongo *dao.Mongo
 }
 
 func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (*rentalpb.TripEntity, error) {
@@ -33,7 +33,7 @@ func (s *Service) UpdateTrip(ctx context.Context, req *rentalpb.UpdateTripReq) (
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "")
 	}
-	trip, err := s.col.GetTrip(ctx, id.TripID(req.Id), accountID)
+	trip, err := s.Mongo.GetTrip(ctx, id.TripID(req.Id), accountID)
 	if err != nil {
 		return nil, err
 	}
@@ -45,5 +45,7 @@ func (s *Service) UpdateTrip(ctx context.Context, req *rentalpb.UpdateTripReq) (
 	if req.GetEndTrip() {
 		//TODO: 结束形成
 	}
-	s.col.UpdateTrip(ctx,)
+	s.Mongo.UpdateTrip(ctx, id.TripID(req.Id), accountID, trip.UpdatedAt, trip.Trip)
+
+	return nil, nil
 }

@@ -227,6 +227,96 @@ func TestMongo_GetTrips(t *testing.T) {
 	}
 }
 
+func TestMongo_UpdateTrip(t *testing.T) {
+	ctx := context.Background()
+	mc, err := mongotesting.NewClient(ctx)
+	if err != nil {
+		t.Fatalf("cannot connect mongodb:%v", err)
+	}
+
+	m := NewMongo(mc.Database("coolcar"))
+	tid := id.TripID("63314f684807369ed78eccb7")
+	aid := id.AccountID("account_for_update")
+
+	//模拟时间,用于触发乐观锁
+	var now int64 = 10000
+	mgo.NewObjIDWithValue(tid)
+	mgo.UpdatedAt = func() int64 {
+		return now
+	}
+
+	tr, err := m.CreateTrip(ctx, &rentalpb.Trip{
+		AccountId: aid.String(),
+		Status:    rentalpb.TripStatus_IN_PROGRESS,
+		Start: &rentalpb.LocationStatus{
+			PoiName: "start_poi",
+		},
+	})
+	if err != nil {
+		t.Fatalf("cannot create trip :%v", err)
+	}
+
+	if tr.UpdatedAt != 10000 {
+		t.Fatalf("updatedat time is err:%v", err)
+	}
+
+	cases := []struct {
+		name          string
+		now           int64
+		withUpdatedAt int64
+		wantErr       bool
+	}{
+		{
+			name:          "trip_update_one",
+			now:           20000,
+			withUpdatedAt: 10000,
+		},
+		{
+			//引起冲突项
+			name:          "trip_update_BF",
+			now:           30000,
+			withUpdatedAt: 10000,
+			wantErr:       true,
+		},
+		{
+			name:          "trip_update_retry",
+			now:           30000,
+			withUpdatedAt: 20000,
+		},
+	}
+
+	update := &rentalpb.Trip{
+		AccountId: aid.String(),
+		Status:    rentalpb.TripStatus_IN_PROGRESS,
+		Start: &rentalpb.LocationStatus{
+			PoiName: "start_poi",
+		},
+	}
+
+	for _, v := range cases {
+		err = m.UpdateTrip(ctx, tid, aid, v.withUpdatedAt, update)
+		if v.wantErr {
+			if err == nil {
+				t.Errorf("%s:I'v want:%v;but got:%v", v.name, v.wantErr, err)
+			} else {
+				continue
+			}
+		} else {
+			if err != nil {
+				t.Errorf("%s:cannot update trip:%v", v.name, err)
+			}
+		}
+		updateTrip, err := m.GetTrip(ctx, tid, aid)
+		if err != nil {
+			t.Errorf("%s:cannot got trip after update:%v", v.name, err)
+		}
+
+		if v.now != updateTrip.UpdatedAt {
+			t.Errorf("%s:i'v want updateat %v;but got updateat %v", v.name, v.now, updateTrip.UpdatedAt)
+		}
+	}
+}
+
 func TestMain(m *testing.M) {
 	os.Exit(mongotesting.RunWithMongoInDocker(m))
 }

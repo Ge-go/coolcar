@@ -96,3 +96,29 @@ func (m *Mongo) GetTrips(ctx context.Context, accountID id.AccountID, status ren
 
 	return trips, nil
 }
+
+func (m *Mongo) UpdateTrip(ctx context.Context, tid id.TripID, accountID id.AccountID, updatedat int64, trip *rentalpb.Trip) error {
+	objID, err := objid.FromID(tid)
+	if err != nil {
+		return err
+	}
+
+	newUpdateAt := mgo.UpdatedAt()
+	res, err := m.col.UpdateOne(ctx, bson.M{
+		accountIDField:         accountID.String(),
+		mgo.IDFieldName:        objID,
+		mgo.UpdatedAtFieldName: updatedat,
+	}, mgo.Set(bson.M{
+		tripField:              trip,
+		mgo.UpdatedAtFieldName: newUpdateAt,
+	}))
+	if err != nil {
+		return err
+	}
+
+	if res.MatchedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+
+	return nil
+}
