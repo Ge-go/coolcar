@@ -2,7 +2,9 @@ package dao
 
 import (
 	"context"
+	"coolcar/shared/id"
 	mgo "coolcar/shared/mongo"
+	"coolcar/shared/mongo/objid"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,7 +25,7 @@ func NewMongo(db *mongo.Database) *Mongo {
 	}
 }
 
-func (m *Mongo) ResolveAccountID(ctx context.Context, openID string) (string, error) {
+func (m *Mongo) ResolveAccountID(ctx context.Context, openID string) (id.AccountID, error) {
 	insertedID := mgo.NewObjID
 
 	res := m.col.FindOneAndUpdate(ctx, bson.M{
@@ -46,5 +48,5 @@ func (m *Mongo) ResolveAccountID(ctx context.Context, openID string) (string, er
 		return "", fmt.Errorf("cannot decode result:%v", err)
 	}
 
-	return row.ID.Hex(), nil
+	return objid.ToAccountID(row.ID), nil
 }

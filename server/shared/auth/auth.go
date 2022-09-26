@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"coolcar/shared/auth/token"
+	"coolcar/shared/id"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"google.golang.org/grpc"
@@ -52,22 +53,15 @@ func (i *interceptor) HandleReq(ctx context.Context, req interface{}, info *grpc
 		return nil, status.Errorf(codes.Unauthenticated, "cannot verify token:%v", err)
 	}
 
-	return handler(ContextWithAccountID(ctx, AccountID(accountID)), req)
+	return handler(ContextWithAccountID(ctx, id.AccountID(accountID)), req)
 }
 
 // hide accountID
 type accountIDKey struct {
 }
 
-// AccountID defines account id object.
-type AccountID string
-
-func (a AccountID) String() string {
-	return string(a)
-}
-
 // ContextWithAccountID carry aid to req
-func ContextWithAccountID(ctx context.Context, aid AccountID) context.Context {
+func ContextWithAccountID(ctx context.Context, aid id.AccountID) context.Context {
 	return context.WithValue(ctx, accountIDKey{}, aid)
 }
 
@@ -94,9 +88,9 @@ func tokenFromCtx(ctx context.Context) (string, error) {
 
 // AccountIDFromContext gets account id from context
 // Returns unauthenticated error if no account id is available
-func AccountIDFromContext(ctx context.Context) (AccountID, error) {
+func AccountIDFromContext(ctx context.Context) (id.AccountID, error) {
 	v := ctx.Value(accountIDKey{})
-	aid, ok := v.(AccountID)
+	aid, ok := v.(id.AccountID)
 	if !ok {
 		return "", status.Error(codes.Unauthenticated, "")
 	}

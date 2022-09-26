@@ -2,21 +2,18 @@ package dao
 
 import (
 	"context"
+	"coolcar/shared/id"
 	mgo "coolcar/shared/mongo"
+	"coolcar/shared/mongo/objid"
 	mongotesting "coolcar/shared/mongo/testing"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"os"
 	"testing"
 )
 
-var mongoURI string
-
 func TestMongo_ResolveAccountID(t *testing.T) {
 	ctx := context.Background()
-	mc, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoURI))
+	mc, err := mongotesting.NewClient(ctx)
 	if err != nil {
 		t.Fatalf("cannot connect mongodb:%v", err)
 	}
@@ -24,11 +21,11 @@ func TestMongo_ResolveAccountID(t *testing.T) {
 	m := NewMongo(mc.Database("coolcar"))
 	_, err = m.col.InsertMany(ctx, []interface{}{
 		bson.M{
-			mgo.IDFieldName: mustObjID("5f7c245ab0361e00ffb9fd6f"),
+			mgo.IDFieldName: objid.MustFromID(id.AccountID("5f7c245ab0361e00ffb9fd6f")),
 			openIDField:     "openid_1",
 		},
 		bson.M{
-			mgo.IDFieldName: mustObjID("5f7c245ab0361e00ffb9fd70"),
+			mgo.IDFieldName: objid.MustFromID(id.AccountID("5f7c245ab0361e00ffb9fd70")),
 			openIDField:     "openid_2",
 		},
 	})
@@ -36,9 +33,7 @@ func TestMongo_ResolveAccountID(t *testing.T) {
 		t.Fatalf("cannot InserMany data:%v", err)
 	}
 
-	mgo.NewObjID = func() primitive.ObjectID {
-		return mustObjID("5f7c245ab0361e00ffb9fd71")
-	}
+	mgo.NewObjIDWithValue(id.AccountID("5f7c245ab0361e00ffb9fd71"))
 
 	cases := []struct {
 		name   string
@@ -68,18 +63,13 @@ func TestMongo_ResolveAccountID(t *testing.T) {
 			if err != nil {
 				t.Errorf("faild resolve account id for %q:%v", cs.openID, err)
 			}
-			if id != cs.want {
+			if id.String() != cs.want {
 				t.Errorf("resolve account id: want:%q,got:%q", cs.want, id)
 			}
 		})
 	}
 }
 
-func mustObjID(objID string) primitive.ObjectID {
-	hex, _ := primitive.ObjectIDFromHex(objID)
-	return hex
-}
-
 func TestMain(m *testing.M) {
-	os.Exit(mongotesting.RunWithMongoInDocker(m, &mongoURI))
+	os.Exit(mongotesting.RunWithMongoInDocker(m))
 }

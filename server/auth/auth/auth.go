@@ -32,19 +32,19 @@ type TokenGenerator interface {
 }
 
 func (s *Service) Login(ctx context.Context, req *authpb.LoginReq) (*authpb.LoginRsp, error) {
-	result, err := s.ResolveOpenID.Resolve(req.Code)
+	openID, err := s.ResolveOpenID.Resolve(req.Code)
 	if err != nil {
 		return nil, status.Errorf(codes.Unavailable, "cannot resolveOpenID: %v", err)
 	}
 
-	accountID, err := s.Mongo.ResolveAccountID(ctx, result)
+	accountID, err := s.Mongo.ResolveAccountID(ctx, openID)
 	if err != nil {
 		s.Log.Error("cannot resolve account id:", zap.Error(err))
 		return nil, status.Errorf(codes.Internal, "")
 	}
 
 	//accountID get Token
-	token, err := s.GenerateToken.GenerateToken(accountID, s.TokenExpire)
+	token, err := s.GenerateToken.GenerateToken(accountID.String(), s.TokenExpire)
 
 	if err != nil {
 		s.Log.Error("cannot generate token:", zap.Error(err))

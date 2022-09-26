@@ -3,17 +3,18 @@ package dao
 import (
 	"context"
 	rentalpb "coolcar/rental/api/gen/v1"
-	"coolcar/shared/auth"
+	"coolcar/shared/id"
 	mgo "coolcar/shared/mongo"
+	"coolcar/shared/mongo/objid"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const (
-	tripField      = "trip"
-	accountIDField = tripField + ".accountid"
+	tripField       = "trip"
+	accountIDField  = tripField + ".accountid"
+	tripStatusField = tripField + ".status"
 )
 
 type Mongo struct {
@@ -27,9 +28,9 @@ func NewMongo(db *mongo.Database) *Mongo {
 }
 
 type TripRecord struct {
-	mgo.ObjID
-	mgo.UpdatedAtField
-	Trip *rentalpb.Trip `bson:"trip"`
+	mgo.ObjID          `bson:"inline"`
+	mgo.UpdatedAtField `bson:"inline"`
+	Trip               *rentalpb.Trip `bson:"trip"`
 }
 
 func (m *Mongo) CreateTrip(ctx context.Context, trip *rentalpb.Trip) (*TripRecord, error) {
@@ -47,8 +48,8 @@ func (m *Mongo) CreateTrip(ctx context.Context, trip *rentalpb.Trip) (*TripRecor
 	return r, nil
 }
 
-func (m *Mongo) GetTrip(ctx context.Context, id string, accountID auth.AccountID) (*TripRecord, error) {
-	objID, err := primitive.ObjectIDFromHex(id)
+func (m *Mongo) GetTrip(ctx context.Context, id id.TripID, accountID id.AccountID) (*TripRecord, error) {
+	objID, err := objid.FromID(id)
 	if err != nil {
 		return nil, fmt.Errorf("invalid id: %v", err)
 	}
@@ -68,4 +69,30 @@ func (m *Mongo) GetTrip(ctx context.Context, id string, accountID auth.AccountID
 	}
 
 	return &tr, nil
+}
+
+func (m *Mongo) GetTrips(ctx context.Context, accountID id.AccountID, status rentalpb.TripStatus) ([]*TripRecord, error) {
+	filter := bson.M{
+		accountIDField: accountID,
+	}
+
+	if status != rentalpb.TripStatus_TS_NOT_SPECIFIED {
+		filter[tripStatusField] = status
+	}
+	res, err := m.col.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	var trips []*TripRecord
+	for res.Next(ctx) {
+		var trip TripRecord
+		err = res.Decode(&trip)
+		if err != nil {
+			return nil, err
+		}
+		trips = append(trips, &trip)
+	}
+
+	return trips, nil
 }
