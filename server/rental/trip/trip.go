@@ -17,6 +17,8 @@ type Service struct {
 	Mongo          *dao.Mongo
 	CarManager     CarManager
 	POIManager     POIManager
+
+	rentalpb.UnimplementedTripServiceServer
 }
 
 // ProfileManager defines the ACL (Anti Corruption Layer)访问控制,防止领域入侵
@@ -95,11 +97,40 @@ func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (
 }
 
 func (s *Service) GetTrip(ctx context.Context, req *rentalpb.GetTripReq) (*rentalpb.Trip, error) {
-	panic("implement me")
+	aid, err := auth.AccountIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	trip, err := s.Mongo.GetTrip(ctx, id.TripID(req.Id), aid)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, "")
+	}
+
+	return trip.Trip, nil
 }
 
 func (s *Service) GetTrips(ctx context.Context, req *rentalpb.GetTripsReq) (*rentalpb.GetTripsRsp, error) {
-	panic("implement me")
+	aid, err := auth.AccountIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	trips, err := s.Mongo.GetTrips(ctx, aid, req.Status)
+	if err != nil {
+		s.Log.Error("cannot get trips.", zap.Error(err))
+		return nil, status.Error(codes.Internal, "")
+	}
+
+	res := &rentalpb.GetTripsRsp{}
+	for _, tr := range trips {
+		res.Trips = append(res.Trips, &rentalpb.TripEntity{
+			Id:   tr.ID.Hex(),
+			Trip: tr.Trip,
+		})
+	}
+
+	return res, nil
 }
 
 func (s *Service) UpdateTrip(ctx context.Context, req *rentalpb.UpdateTripReq) (*rentalpb.Trip, error) {

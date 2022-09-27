@@ -11,7 +11,7 @@
       "list": [
         {
           "name": "",
-          "pathName": "pages/lock/lock",
+          "pathName": "pages/mytrips/mytrips",
           "query": "car_id=car123",
           "launchMode": "default",
           "scene": null

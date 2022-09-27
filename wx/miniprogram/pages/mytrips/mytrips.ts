@@ -1,4 +1,6 @@
 import { IAppOption } from "../../appoption"
+import { rental } from "../../service/proto_gen/rental/rental_pb"
+import { TripService } from "../../service/trip"
 import { routing } from "../../utils/routing"
 
 interface Trip {
@@ -83,7 +85,7 @@ Page({
     navScroll: '',
   },
 
-  onLoad() {
+  async onLoad() {
     // const layoutReady = new Promise(() => {
     //   //TODO: 这里尚未改动
     //   this.layoutResolver = undefined
@@ -91,6 +93,9 @@ Page({
     // Promise.all([TripService.getTrips(), layoutReady]).then(([trips]) => {
     //   this.populateTrips(trips.trips!)
     // })
+
+    const res = await TripService.GetTrips(rental.v1.TripStatus.FINISHED)
+
     getApp<IAppOption>().globalData.userInfo.then(userInfo => {
       this.setData({
         avatarURL: userInfo.avatarUrl,

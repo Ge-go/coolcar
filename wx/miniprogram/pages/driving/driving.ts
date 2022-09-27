@@ -1,3 +1,4 @@
+import { TripService } from "../../service/trip"
 import { routing } from "../../utils/routing"
 
 const centerPerSec = 0.7  //记录租车价格,每秒钟0.35分,如产品有改动,则计费规则可改变
@@ -36,6 +37,10 @@ Page({
     onLoad(opt: Record<'trip_id', string>) {
         const o: routing.DrivingOpts = opt
         console.log("current trip", o.trip_id)
+
+        o.trip_id = '6332f869fcea179722eca340'
+        TripService.GetTrip(o.trip_id).then(console.log)
+
         this.setupLocationUpdator()
         this.setupTimer()
     },
