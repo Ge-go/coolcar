@@ -3,6 +3,7 @@ package main
 import (
 	rentalpb "coolcar/rental/api/gen/v1"
 	"coolcar/rental/trip"
+	"coolcar/rental/trip/client/poi"
 	"coolcar/shared/server"
 	"google.golang.org/grpc"
 )
@@ -20,7 +21,8 @@ func main() {
 		Logger:       logger,
 		RegisterFunc: func(s *grpc.Server) {
 			rentalpb.RegisterTripServiceServer(s, &trip.Service{
-				Log: logger,
+				Log:        logger,
+				POIManager: &poi.Manager{},
 			})
 		},
 	}))

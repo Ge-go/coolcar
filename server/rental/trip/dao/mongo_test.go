@@ -294,6 +294,9 @@ func TestMongo_UpdateTrip(t *testing.T) {
 	}
 
 	for _, v := range cases {
+		mgo.UpdatedAt = func() int64 {
+			return v.now
+		}
 		err = m.UpdateTrip(ctx, tid, aid, v.withUpdatedAt, update)
 		if v.wantErr {
 			if err == nil {
