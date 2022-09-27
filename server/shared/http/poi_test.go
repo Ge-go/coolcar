@@ -9,8 +9,8 @@ import (
 
 func TestTransformationLocal(t *testing.T) {
 	local, err := TransformationLocal(context.Background(), &rentalpb.Location{
-		Latitude:  28.7033487,
-		Longitude: 115.8660847,
+		Latitude:  22.55329,
+		Longitude: 113.88308,
 	})
 	if err != nil {
 		t.Fatalf("cannot get local:%v", err)

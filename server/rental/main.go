@@ -1,17 +1,30 @@
 package main
 
 import (
+	"context"
 	rentalpb "coolcar/rental/api/gen/v1"
 	"coolcar/rental/trip"
+	"coolcar/rental/trip/client/car"
 	"coolcar/rental/trip/client/poi"
+	"coolcar/rental/trip/client/profile"
+	"coolcar/rental/trip/dao"
 	"coolcar/shared/server"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
+	"log"
 )
 
 func main() {
+	ctx := context.Background()
 	logger, err := server.NewZapLogger()
 	if err != nil {
 		panic(err.Error())
+	}
+
+	mgClient, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://121.37.232.8:27019/coolcar?readPreference=primary&ssl=false"))
+	if err != nil {
+		log.Fatalf("cannot connect mongo:%v", err)
 	}
 
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
@@ -21,8 +34,11 @@ func main() {
 		Logger:       logger,
 		RegisterFunc: func(s *grpc.Server) {
 			rentalpb.RegisterTripServiceServer(s, &trip.Service{
-				Log:        logger,
-				POIManager: &poi.Manager{},
+				Log:            logger,
+				POIManager:     &poi.Manager{},
+				Mongo:          dao.NewMongo(mgClient.Database("coolcar")),
+				CarManager:     &car.Manager{},
+				ProfileManager: &profile.Manager{},
 			})
 		},
 	}))
