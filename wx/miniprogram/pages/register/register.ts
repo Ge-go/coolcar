@@ -1,8 +1,21 @@
+import { ProfileService } from "../../service/profile"
+import { rental } from "../../service/proto_gen/rental/rental_pb"
+import { padString } from "../../utils/format"
 import { routing } from "../../utils/routing"
+
+function formatDate(millis: number) {
+  const dt = new Date(millis)
+  const y = dt.getFullYear()
+  const m = dt.getMonth() + 1
+  const d = dt.getDate()
+
+  return `${padString(y)}-${padString(m)}-${padString(d)}`
+}
 
 // pages/register/register.ts
 Page({
   redirectURL: '', //要跳转的路径
+  profileRefresher: 0,
 
   data: {
     licNo: '', //驾驶证号
@@ -11,8 +24,18 @@ Page({
     genderIndex: 0,
     genders: ['未知', '男', '女', '其他'],
     licImgURL: undefined as string | undefined,
-    state: 'UNSUBMITTED' as 'UNSUBMITTED' | 'PENDING' | 'VERIFIED',//递交审查状态
+    state: rental.v1.IdentityStatus[rental.v1.IdentityStatus.UNSUBMITTED],//递交审查状态
     signImgURL: '' //完成审查后的对勾的URL
+  },
+
+  renderProfile(p: rental.v1.IProfile) {
+    this.setData({
+      licNo: p.identity?.licNumber || '',
+      name: p.identity?.name || '',
+      genderIndex: p.identity?.gender || 0,
+      birthDate: formatDate(p.identity?.birthDateMillis || 0),
+      state: rental.v1.IdentityStatus[p.identityStatus || 0]
+    })
   },
 
   onLoad(opt: Record<'redirect', string>) {
@@ -20,6 +43,7 @@ Page({
     if (o.redirect) {
       this.redirectURL = decodeURIComponent(o.redirect)
     }
+    ProfileService.getProfile().then(p => this.renderProfile(p))
   },
 
   onLoadImg() {  //加载驾驶证图片,用于解析数据
@@ -44,7 +68,7 @@ Page({
   },
   onGenderChange(e: any) {
     this.setData({
-      genderIndex: e.detail.value,
+      genderIndex: parseInt(e.detail.value),
     })
   },
   onBirthDataChange(e: any) {
@@ -54,17 +78,12 @@ Page({
   },
   //递交审查 TODO: 后续接入后端要进行修改
   onSubmit() {
-    this.setData({
-      state: 'PENDING',
-    })
-
-    //模拟返回
-    setTimeout(() => {
-      this.setData({
-        state: 'VERIFIED',
-        signImgURL: '/resources/check.png'
-      })
-    }, 30)
+    ProfileService.submitProfile({
+      licNumber: this.data.licNo,
+      name: this.data.name,
+      gender: this.data.genderIndex,
+      birthDateMillis: Date.parse(this.data.birthDate),
+    }).then(p => this.renderProfile(p))
 
     if (this.redirectURL) {
       console.log(this.redirectURL)
@@ -75,11 +94,40 @@ Page({
   },
   //重新审查 TODO: 后面也需要接入后端
   onResubmit() {
-    setTimeout(() => {
-      this.setData({
-        state: 'UNSUBMITTED',
-        licImgURL: '',
+    ProfileService.clearProfile().then(p => {
+      this.renderProfile(p)
+      this.scheduleProfileRefresher()
+    })
+  },
+
+  onUnload() {
+    this.clearProfileRefresher()
+  },
+
+  scheduleProfileRefresher() {
+    this.profileRefresher = setInterval(() => {
+      ProfileService.getProfile().then(p => {
+        this.renderProfile(p)
+        if (p.identityStatus !== rental.v1.IdentityStatus.PENDING) {
+          this.clearProfileRefresher()
+        }
+        if (p.identityStatus === rental.v1.IdentityStatus.VERIFIED) {
+          this.onLicVerified()
+        }
       })
+    }, 1000)
+  },
+
+  clearProfileRefresher() {
+    if (this.profileRefresher) {
+      clearInterval(this.profileRefresher)
+      this.profileRefresher = 0
+    }
+  },
+
+  onLicVerified() {
+    wx.redirectTo({
+      url: this.redirectURL,
     })
   }
 })

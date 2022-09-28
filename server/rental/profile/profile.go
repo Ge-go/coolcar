@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"time"
 )
 
 // Service impl profile service
@@ -51,6 +52,17 @@ func (s *Service) SubmitProfile(ctx context.Context, req *rentalpb.Identity) (*r
 		s.Logger.Error("cannot update profile", zap.Error(err))
 		return nil, status.Error(codes.Internal, "")
 	}
+
+	go func() {
+		time.Sleep(3e9)
+		err := s.Mongo.UpdateProfile(context.Background(), aid, rentalpb.IdentityStatus_PENDING, &rentalpb.Profile{
+			Identity:       req,
+			IdentityStatus: rentalpb.IdentityStatus_VERIFIED,
+		})
+		if err != nil {
+			s.Logger.Error("cannot verify identity", zap.Error(err))
+		}
+	}()
 
 	return p, nil
 }
