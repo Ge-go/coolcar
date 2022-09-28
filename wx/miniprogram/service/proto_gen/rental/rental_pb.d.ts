@@ -76,6 +76,9 @@ export namespace rental {
 
             /** LocationStatus poiName */
             poiName?: (string|null);
+
+            /** LocationStatus timestampSec */
+            timestampSec?: (number|null);
         }
 
         /** Represents a LocationStatus. */
@@ -98,6 +101,9 @@ export namespace rental {
 
             /** LocationStatus poiName. */
             public poiName: string;
+
+            /** LocationStatus timestampSec. */
+            public timestampSec: number;
 
             /**
              * Decodes a LocationStatus message from the specified reader or buffer.

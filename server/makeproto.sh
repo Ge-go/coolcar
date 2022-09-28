@@ -14,7 +14,7 @@ function genProto() {
   mkdir -p $PBTS_OUT_DIR
 
   #生成js,ts方案
-  $PBTS_BIN_DIR/pbjs -t static -w es6 $PROTO_APTH/${serviceURI}.proto --no-create --no-encode --no-dncode --no-verify --no-delimited -o $PBTS_OUT_DIR/${serviceURI}_pb_tmp.js
+  $PBTS_BIN_DIR/pbjs -t static -w es6 $PROTO_APTH/${serviceURI}.proto --no-create --no-encode --no-dncode --no-verify --no-delimited --force-number -o $PBTS_OUT_DIR/${serviceURI}_pb_tmp.js
   echo 'import * as $protobuf from "protobufjs";' >$PBTS_OUT_DIR/${serviceURI}_pb.js
   cat $PBTS_OUT_DIR/${serviceURI}_pb_tmp.js >>$PBTS_OUT_DIR/${serviceURI}_pb.js
   rm $PBTS_OUT_DIR/${serviceURI}_pb_tmp.js

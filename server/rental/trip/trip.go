@@ -9,6 +9,8 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"math/rand"
+	"time"
 )
 
 type Service struct {
@@ -17,8 +19,6 @@ type Service struct {
 	Mongo          *dao.Mongo
 	CarManager     CarManager
 	POIManager     POIManager
-
-	rentalpb.UnimplementedTripServiceServer
 }
 
 // ProfileManager defines the ACL (Anti Corruption Layer)访问控制,防止领域入侵
@@ -44,6 +44,11 @@ func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (
 		return nil, err
 	}
 
+	//TODO 引入validate.proto组件
+	if req.CarId == "" || req.Start == nil {
+		return nil, status.Error(codes.InvalidArgument, "")
+	}
+
 	//验证驾驶者身份
 	iID, err := s.ProfileManager.Verify(ctx, aid)
 	if err != nil {
@@ -56,16 +61,12 @@ func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
-	//根据传入的Location坐标,识别出一个具体地址
-	poi, err := s.POIManager.Resolve(ctx, req.Start)
-	if err != nil {
-		s.Log.Info("cannot resolve poi", zap.Stringer("location", req.Start), zap.Error(err))
-	}
+	//获取初始位置信息
+	ls := s.calcCurrentStatus(ctx, &rentalpb.LocationStatus{
+		Location:     req.Start,
+		TimestampSec: nowFunc(),
+	}, req.Start)
 
-	ls := &rentalpb.LocationStatus{
-		Location: req.Start,
-		PoiName:  poi,
-	}
 	//创建行程,入库计费 (思考,这里如何做到一致性)
 	tr, err := s.Mongo.CreateTrip(ctx, &rentalpb.Trip{
 		AccountId:  aid.String(),
@@ -136,21 +137,64 @@ func (s *Service) GetTrips(ctx context.Context, req *rentalpb.GetTripsReq) (*ren
 func (s *Service) UpdateTrip(ctx context.Context, req *rentalpb.UpdateTripReq) (*rentalpb.Trip, error) {
 	accountID, err := auth.AccountIDFromContext(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "")
+		return nil, err
 	}
 	trip, err := s.Mongo.GetTrip(ctx, id.TripID(req.Id), accountID)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.NotFound, "")
 	}
 
-	if req.Current != nil {
-		//TODO: 更新形成,计算价格
+	if trip.Trip.Current == nil {
+		s.Log.Error("trip with out current set", zap.String("id", trip.ID.Hex()))
+		return nil, status.Error(codes.Internal, "")
 	}
+
+	cur := trip.Trip.Current.Location
+	if req.Current != nil {
+		//更新行程
+		cur = req.Current
+	}
+
+	trip.Trip.Current = s.calcCurrentStatus(ctx, trip.Trip.Current, cur)
 
 	if req.GetEndTrip() {
-		//TODO: 结束形成
+		//结束行程
+		trip.Trip.End = trip.Trip.Current
+		trip.Trip.Status = rentalpb.TripStatus_FINISHED
 	}
-	s.Mongo.UpdateTrip(ctx, id.TripID(req.Id), accountID, trip.UpdatedAt, trip.Trip)
+	err = s.Mongo.UpdateTrip(ctx, id.TripID(req.Id), accountID, trip.UpdatedAt, trip.Trip)
+	if err != nil {
+		s.Log.Error("update trip error.", zap.String("update error id", req.Id), zap.Error(err))
+		return nil, status.Error(codes.Aborted, "")
+	}
 
-	return nil, nil
+	return trip.Trip, nil
+}
+
+var nowFunc = func() int64 {
+	return time.Now().Unix()
+}
+
+const (
+	centsPerSec = 0.7
+	kmPerSec    = 0.02
+)
+
+func (s *Service) calcCurrentStatus(ctx context.Context, last *rentalpb.LocationStatus, cur *rentalpb.Location) *rentalpb.LocationStatus {
+	now := nowFunc()
+	elapsedSec := float64(now - last.TimestampSec)
+
+	//根据传入的Location坐标,识别出一个具体地址
+	poi, err := s.POIManager.Resolve(ctx, cur)
+	if err != nil {
+		s.Log.Info("cannot resolve poi", zap.Stringer("location", cur), zap.Error(err))
+	}
+
+	return &rentalpb.LocationStatus{
+		Location:     cur,
+		FeeCent:      last.FeeCent + int32(centsPerSec*elapsedSec*2*rand.Float64()),
+		KmDriven:     last.KmDriven + kmPerSec*elapsedSec*2*rand.Float64(),
+		TimestampSec: now,
+		PoiName:      poi,
+	}
 }
