@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	rentalpb "coolcar/rental/api/gen/v1"
+	"coolcar/rental/profile"
+	daoProfile "coolcar/rental/profile/dao"
 	"coolcar/rental/trip"
 	"coolcar/rental/trip/client/car"
 	"coolcar/rental/trip/client/poi"
-	"coolcar/rental/trip/client/profile"
-	"coolcar/rental/trip/dao"
+	profileClient "coolcar/rental/trip/client/profile"
+	daoTrip "coolcar/rental/trip/dao"
 	"coolcar/shared/server"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -27,6 +29,9 @@ func main() {
 		log.Fatalf("cannot connect mongo:%v", err)
 	}
 
+	dbTp := daoTrip.NewMongo(mgClient.Database("coolcar"))
+	dbPf := daoProfile.NewMongo(mgClient.Database("coolcar"))
+
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
 		RSAPublicKey: publicKey,
 		Name:         "rental",
@@ -36,9 +41,13 @@ func main() {
 			rentalpb.RegisterTripServiceServer(s, &trip.Service{
 				Log:            logger,
 				POIManager:     &poi.Manager{},
-				Mongo:          dao.NewMongo(mgClient.Database("coolcar")),
+				Mongo:          dbTp,
 				CarManager:     &car.Manager{},
-				ProfileManager: &profile.Manager{},
+				ProfileManager: &profileClient.Manager{},
+			})
+			rentalpb.RegisterProfileServiceServer(s, &profile.Service{
+				Mongo:  dbPf,
+				Logger: logger,
 			})
 		},
 	}))

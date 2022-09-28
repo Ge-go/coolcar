@@ -5,6 +5,7 @@ db.account.createIndex({
     unique: true,
 })
 
+// trip index
 db.trip.createIndex({
     "trip.accountid": 1,
     "trip.status": 1,
@@ -13,4 +14,11 @@ db.trip.createIndex({
     partialFilterExpression: {
         "trip.status": 1,
     }
+})
+
+//profile index
+db.profile.createIndex({
+    accountid: 1,
+}, {
+    unique: true,
 })

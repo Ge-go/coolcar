@@ -99,6 +99,16 @@ func SetupIndex(ctx context.Context, d *mongo.Database) error {
 		return err
 	}
 
+	_, err = d.Collection("profile").Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys: bson.D{
+			{Key: "accountid", Value: 1},
+		},
+		Options: options.Index().SetUnique(true),
+	})
+	if err != nil {
+		return err
+	}
+
 	_, err = d.Collection("trip").Indexes().CreateOne(ctx, mongo.IndexModel{
 		Keys: bson.D{
 			{Key: "trip.accountid", Value: 1},
