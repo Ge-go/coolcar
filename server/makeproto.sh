@@ -1,5 +1,6 @@
 function genProto() {
   serviceURI=$1
+  SKIP_GATEWAY=$2
   PROTO_APTH=./${serviceURI}/api
   GO_OUT_PATH=./${serviceURI}/api/gen/v1
   mkdir -p $GO_OUT_PATH
@@ -7,6 +8,11 @@ function genProto() {
   #go grpc,pb,grpcGateway生成方案
   protoc -I=$PROTO_APTH --go_out=paths=source_relative:$GO_OUT_PATH $PROTO_APTH/${serviceURI}.proto
   protoc -I=$PROTO_APTH --go-grpc_out=paths=source_relative:$GO_OUT_PATH $PROTO_APTH/${serviceURI}.proto
+
+  if [ $SKIP_GATEWAY ]; then
+    return
+  fi
+
   protoc -I=$PROTO_APTH --grpc-gateway_out=paths=source_relative,grpc_api_configuration=$PROTO_APTH/${serviceURI}.yaml:$GO_OUT_PATH $PROTO_APTH/${serviceURI}.proto
 
   PBTS_BIN_DIR=../wx/miniprogram/node_modules/.bin
@@ -24,3 +30,4 @@ function genProto() {
 
 genProto auth
 genProto rental
+genProto blob 1

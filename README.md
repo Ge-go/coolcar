@@ -31,9 +31,7 @@ This is a car rental applet front-end code.
     点击工具构建npm
     点击编译
 
-## 暂存问题
-    bat命令执行问题
-    可能会少执行一条pbts命令,需要手动执行
-    生成的.d.ts头文件要复制到js中
+    后端服务直接启动即可,gateway以及grpc各个模块服务启动无先后顺序之分
 
+## 整体服务架构
 ![微服务架构图](../coolcar/architectureDiagram/wfw.png)

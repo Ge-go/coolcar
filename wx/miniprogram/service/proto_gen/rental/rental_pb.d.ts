@@ -733,6 +733,7 @@ export namespace rental {
              * Converts this Identity to JSON.
              * @returns JSON object
              */
+            public toJSON(): { [k: string]: any };
         }
 
         /** IdentityStatus enum. */

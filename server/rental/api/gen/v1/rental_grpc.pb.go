@@ -263,6 +263,7 @@ type ProfileServiceServer interface {
 	GetProfile(context.Context, *GetProfileReq) (*Profile, error)
 	SubmitProfile(context.Context, *Identity) (*Profile, error)
 	ClearProfile(context.Context, *ClearProfileReq) (*Profile, error)
+	mustEmbedUnimplementedProfileServiceServer()
 }
 
 // UnimplementedProfileServiceServer must be embedded to have forward compatible implementations.

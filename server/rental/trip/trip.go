@@ -51,7 +51,7 @@ func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (
 		return nil, status.Error(codes.InvalidArgument, "")
 	}
 
-	//验证驾驶者身份  TODO 以及是否注册了
+	//验证驾驶者身份
 	iID, err := s.ProfileManager.Verify(ctx, aid)
 	if err != nil {
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
