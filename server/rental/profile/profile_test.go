@@ -8,6 +8,7 @@ import (
 	"coolcar/shared/id"
 	mongotesting "coolcar/shared/mongo/testing"
 	"coolcar/shared/server"
+	"os"
 	"testing"
 )
 
@@ -75,7 +76,7 @@ func Test_Profile(t *testing.T) {
 					},
 					IdentityStatus: rentalpb.IdentityStatus_VERIFIED,
 				}
-				err = s.Mongo.UpdateProfile(ctx, aid, p.IdentityStatus, p)
+				err = s.Mongo.UpdateProfile(ctx, aid, rentalpb.IdentityStatus_PENDING, p)
 				if err != nil {
 					return nil, err
 				}
@@ -110,4 +111,8 @@ func Test_Profile(t *testing.T) {
 			t.Errorf("i'v want status %v;but got %v;", v.wantStatus, p.IdentityStatus)
 		}
 	}
+}
+
+func TestMain(m *testing.M) {
+	os.Exit(mongotesting.RunWithMongoInDocker(m))
 }

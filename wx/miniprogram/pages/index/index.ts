@@ -1,3 +1,6 @@
+import { ProfileService } from "../../service/profile"
+import { rental } from "../../service/proto_gen/rental/rental_pb"
+import { TripService } from "../../service/trip"
 import { routing } from "../../utils/routing"
 
 Page({
@@ -89,25 +92,47 @@ Page({
   },
 
   //处理扫码动作
-  onScanClicked() {
+  async onScanClicked() {
+    //验证当前是否已经有行程在进行
+    // const trips = await TripService.GetTrips(rental.v1.TripStatus.IN_PROGRESS)
+
+    // if (((trips.trips?.length) || 0) > 0) {
+    //   await this.selectComponent('#tripModal').showModal()
+    //   wx.navigateTo({
+    //     url: routing.drving({
+    //       trip_id: trips.trips![0].id!,
+    //     })
+    //   })
+    //   return
+    // }
+
     wx.scanCode({
       success: async () => {
-        await this.selectComponent('#licModal').showModal()
-        this.setData({
-          showModal: true,
-        })
-
         //TODO: 模拟获取car_id  为了方便后续页面接入(是否还需要再包装)
         const carID = 'car123'
-        const redirectURL = routing.lock({
+        const lockURL = routing.lock({
           car_id: carID
         })
-        wx.navigateTo({
-          url: routing.register({
-            redirectURL: redirectURL,
-          })
-        })
 
+        const prof = await ProfileService.getProfile()
+
+        // 判断是否已经验证过驾驶证信息
+        if (prof.identityStatus === rental.v1.IdentityStatus.VERIFIED) {
+          wx.navigateTo({
+            url: lockURL,
+          })
+        } else {
+          await this.selectComponent('#licModal').showModal()
+          this.setData({
+            showModal: true,
+          })
+
+          wx.navigateTo({
+            url: routing.register({
+              redirectURL: lockURL,
+            })
+          })
+        }
       },
       fail: res => {
         console.log(res)

@@ -32,6 +32,10 @@ func main() {
 	dbTp := daoTrip.NewMongo(mgClient.Database("coolcar"))
 	dbPf := daoProfile.NewMongo(mgClient.Database("coolcar"))
 
+	pfService := &profile.Service{
+		Mongo:  dbPf,
+		Logger: logger,
+	}
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
 		RSAPublicKey: publicKey,
 		Name:         "rental",
@@ -39,16 +43,16 @@ func main() {
 		Logger:       logger,
 		RegisterFunc: func(s *grpc.Server) {
 			rentalpb.RegisterTripServiceServer(s, &trip.Service{
-				Log:            logger,
-				POIManager:     &poi.Manager{},
-				Mongo:          dbTp,
-				CarManager:     &car.Manager{},
-				ProfileManager: &profileClient.Manager{},
+				Log:        logger,
+				POIManager: &poi.Manager{},
+				Mongo:      dbTp,
+				CarManager: &car.Manager{},
+				ProfileManager: &profileClient.Manager{
+					Fetcher: pfService,
+				},
 			})
-			rentalpb.RegisterProfileServiceServer(s, &profile.Service{
-				Mongo:  dbPf,
-				Logger: logger,
-			})
+
+			rentalpb.RegisterProfileServiceServer(s, pfService)
 		},
 	}))
 }

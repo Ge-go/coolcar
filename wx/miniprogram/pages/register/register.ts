@@ -83,20 +83,22 @@ Page({
       name: this.data.name,
       gender: this.data.genderIndex,
       birthDateMillis: Date.parse(this.data.birthDate),
-    }).then(p => this.renderProfile(p))
+    }).then(p => {
+      this.renderProfile(p)
+      this.scheduleProfileRefresher()
+    })
 
-    if (this.redirectURL) {
-      console.log(this.redirectURL)
-      wx.redirectTo({
-        url: this.redirectURL
-      })
-    }
+    // if (this.redirectURL) {
+    //   console.log(this.redirectURL)
+    //   wx.redirectTo({
+    //     url: this.redirectURL
+    //   })
+    // }
   },
   //重新审查 TODO: 后面也需要接入后端
   onResubmit() {
     ProfileService.clearProfile().then(p => {
       this.renderProfile(p)
-      this.scheduleProfileRefresher()
     })
   },
 
@@ -104,6 +106,7 @@ Page({
     this.clearProfileRefresher()
   },
 
+  // 轮询获取验证驾驶照片状态
   scheduleProfileRefresher() {
     this.profileRefresher = setInterval(() => {
       ProfileService.getProfile().then(p => {
@@ -112,6 +115,10 @@ Page({
           this.clearProfileRefresher()
         }
         if (p.identityStatus === rental.v1.IdentityStatus.VERIFIED) {
+          this.setData({
+            signImgURL: '/resources/check.png',
+            state: rental.v1.IdentityStatus[rental.v1.IdentityStatus.VERIFIED],
+          })
           this.onLicVerified()
         }
       })
@@ -126,8 +133,13 @@ Page({
   },
 
   onLicVerified() {
-    wx.redirectTo({
-      url: this.redirectURL,
-    })
-  }
+    if (this.redirectURL) {
+      wx.redirectTo({
+        url: this.redirectURL,
+      })
+    }
+  },
+
+  //绑定空函数,解决model报错问题
+  fakeCallback() { }
 })
