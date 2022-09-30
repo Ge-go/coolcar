@@ -16,8 +16,8 @@ func main() {
 	}
 	su, _ := url.Parse("https://cos.COS_REGION.myqcloud.com")
 	b := &cos.BaseURL{BucketURL: u, ServiceURL: su}
-	id := "AKIDPo0rcDdomX5PXTHuLZZNM7ex4zg9QVMz"
-	key := "SwHPK2axCGAuVxCIDweCZllXAcrulQ1S"
+	id := "$$"
+	key := "$$"
 	client := cos.NewClient(b, &http.Client{
 		Transport: &cos.AuthorizationTransport{
 			SecretID:  id,
