@@ -26,7 +26,7 @@ func main() {
 	})
 
 	name := "imageCheck.png"
-	presignedURL, err := client.Object.GetPresignedURL(context.Background(), http.MethodPost, name, id, key, 1*time.Hour, nil)
+	presignedURL, err := client.Object.GetPresignedURL(context.Background(), http.MethodGet, name, id, key, 1*time.Hour, nil)
 	if err != nil {
 		panic(err)
 	}
