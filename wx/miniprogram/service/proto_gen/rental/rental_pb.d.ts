@@ -733,6 +733,7 @@ export namespace rental {
              * Converts this Identity to JSON.
              * @returns JSON object
              */
+            public toJSON(): { [k: string]: any };
         }
 
         /** IdentityStatus enum. */
@@ -941,6 +942,48 @@ export namespace rental {
              * @returns Promise
              */
             public clearProfile(request: rental.v1.IClearProfileReq): Promise<rental.v1.Profile>;
+
+            /**
+             * Calls GetProfilePhoto.
+             * @param request GetProfilePhotoReq message or plain object
+             * @param callback Node-style callback called with the error, if any, and GetProfilePhotoRsp
+             */
+            public getProfilePhoto(request: rental.v1.IGetProfilePhotoReq, callback: rental.v1.ProfileService.GetProfilePhotoCallback): void;
+
+            /**
+             * Calls GetProfilePhoto.
+             * @param request GetProfilePhotoReq message or plain object
+             * @returns Promise
+             */
+            public getProfilePhoto(request: rental.v1.IGetProfilePhotoReq): Promise<rental.v1.GetProfilePhotoRsp>;
+
+            /**
+             * Calls CreateProfilePhoto.
+             * @param request CreateProfilePhotoReq message or plain object
+             * @param callback Node-style callback called with the error, if any, and CreateProfilePhotoRsp
+             */
+            public createProfilePhoto(request: rental.v1.ICreateProfilePhotoReq, callback: rental.v1.ProfileService.CreateProfilePhotoCallback): void;
+
+            /**
+             * Calls CreateProfilePhoto.
+             * @param request CreateProfilePhotoReq message or plain object
+             * @returns Promise
+             */
+            public createProfilePhoto(request: rental.v1.ICreateProfilePhotoReq): Promise<rental.v1.CreateProfilePhotoRsp>;
+
+            /**
+             * Calls CompleteProfilePhoto.
+             * @param request CompleteProfilePhotoReq message or plain object
+             * @param callback Node-style callback called with the error, if any, and Identity
+             */
+            public completeProfilePhoto(request: rental.v1.ICompleteProfilePhotoReq, callback: rental.v1.ProfileService.CompleteProfilePhotoCallback): void;
+
+            /**
+             * Calls CompleteProfilePhoto.
+             * @param request CompleteProfilePhotoReq message or plain object
+             * @returns Promise
+             */
+            public completeProfilePhoto(request: rental.v1.ICompleteProfilePhotoReq): Promise<rental.v1.Identity>;
         }
 
         namespace ProfileService {
@@ -965,6 +1008,264 @@ export namespace rental {
              * @param [response] Profile
              */
             type ClearProfileCallback = (error: (Error|null), response?: rental.v1.Profile) => void;
+
+            /**
+             * Callback as used by {@link rental.v1.ProfileService#getProfilePhoto}.
+             * @param error Error, if any
+             * @param [response] GetProfilePhotoRsp
+             */
+            type GetProfilePhotoCallback = (error: (Error|null), response?: rental.v1.GetProfilePhotoRsp) => void;
+
+            /**
+             * Callback as used by {@link rental.v1.ProfileService#createProfilePhoto}.
+             * @param error Error, if any
+             * @param [response] CreateProfilePhotoRsp
+             */
+            type CreateProfilePhotoCallback = (error: (Error|null), response?: rental.v1.CreateProfilePhotoRsp) => void;
+
+            /**
+             * Callback as used by {@link rental.v1.ProfileService#completeProfilePhoto}.
+             * @param error Error, if any
+             * @param [response] Identity
+             */
+            type CompleteProfilePhotoCallback = (error: (Error|null), response?: rental.v1.Identity) => void;
+        }
+
+        /** Properties of a GetProfilePhotoReq. */
+        interface IGetProfilePhotoReq {
+        }
+
+        /** Represents a GetProfilePhotoReq. */
+        class GetProfilePhotoReq implements IGetProfilePhotoReq {
+
+            /**
+             * Constructs a new GetProfilePhotoReq.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: rental.v1.IGetProfilePhotoReq);
+
+            /**
+             * Decodes a GetProfilePhotoReq message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns GetProfilePhotoReq
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.GetProfilePhotoReq;
+
+            /**
+             * Creates a GetProfilePhotoReq message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns GetProfilePhotoReq
+             */
+            public static fromObject(object: { [k: string]: any }): rental.v1.GetProfilePhotoReq;
+
+            /**
+             * Creates a plain object from a GetProfilePhotoReq message. Also converts values to other types if specified.
+             * @param message GetProfilePhotoReq
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: rental.v1.GetProfilePhotoReq, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this GetProfilePhotoReq to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a GetProfilePhotoRsp. */
+        interface IGetProfilePhotoRsp {
+
+            /** GetProfilePhotoRsp url */
+            url?: (string|null);
+        }
+
+        /** Represents a GetProfilePhotoRsp. */
+        class GetProfilePhotoRsp implements IGetProfilePhotoRsp {
+
+            /**
+             * Constructs a new GetProfilePhotoRsp.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: rental.v1.IGetProfilePhotoRsp);
+
+            /** GetProfilePhotoRsp url. */
+            public url: string;
+
+            /**
+             * Decodes a GetProfilePhotoRsp message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns GetProfilePhotoRsp
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.GetProfilePhotoRsp;
+
+            /**
+             * Creates a GetProfilePhotoRsp message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns GetProfilePhotoRsp
+             */
+            public static fromObject(object: { [k: string]: any }): rental.v1.GetProfilePhotoRsp;
+
+            /**
+             * Creates a plain object from a GetProfilePhotoRsp message. Also converts values to other types if specified.
+             * @param message GetProfilePhotoRsp
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: rental.v1.GetProfilePhotoRsp, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this GetProfilePhotoRsp to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a CreateProfilePhotoReq. */
+        interface ICreateProfilePhotoReq {
+        }
+
+        /** Represents a CreateProfilePhotoReq. */
+        class CreateProfilePhotoReq implements ICreateProfilePhotoReq {
+
+            /**
+             * Constructs a new CreateProfilePhotoReq.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: rental.v1.ICreateProfilePhotoReq);
+
+            /**
+             * Decodes a CreateProfilePhotoReq message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns CreateProfilePhotoReq
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.CreateProfilePhotoReq;
+
+            /**
+             * Creates a CreateProfilePhotoReq message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns CreateProfilePhotoReq
+             */
+            public static fromObject(object: { [k: string]: any }): rental.v1.CreateProfilePhotoReq;
+
+            /**
+             * Creates a plain object from a CreateProfilePhotoReq message. Also converts values to other types if specified.
+             * @param message CreateProfilePhotoReq
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: rental.v1.CreateProfilePhotoReq, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this CreateProfilePhotoReq to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a CreateProfilePhotoRsp. */
+        interface ICreateProfilePhotoRsp {
+
+            /** CreateProfilePhotoRsp uploadUrl */
+            uploadUrl?: (string|null);
+        }
+
+        /** Represents a CreateProfilePhotoRsp. */
+        class CreateProfilePhotoRsp implements ICreateProfilePhotoRsp {
+
+            /**
+             * Constructs a new CreateProfilePhotoRsp.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: rental.v1.ICreateProfilePhotoRsp);
+
+            /** CreateProfilePhotoRsp uploadUrl. */
+            public uploadUrl: string;
+
+            /**
+             * Decodes a CreateProfilePhotoRsp message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns CreateProfilePhotoRsp
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.CreateProfilePhotoRsp;
+
+            /**
+             * Creates a CreateProfilePhotoRsp message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns CreateProfilePhotoRsp
+             */
+            public static fromObject(object: { [k: string]: any }): rental.v1.CreateProfilePhotoRsp;
+
+            /**
+             * Creates a plain object from a CreateProfilePhotoRsp message. Also converts values to other types if specified.
+             * @param message CreateProfilePhotoRsp
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: rental.v1.CreateProfilePhotoRsp, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this CreateProfilePhotoRsp to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a CompleteProfilePhotoReq. */
+        interface ICompleteProfilePhotoReq {
+        }
+
+        /** Represents a CompleteProfilePhotoReq. */
+        class CompleteProfilePhotoReq implements ICompleteProfilePhotoReq {
+
+            /**
+             * Constructs a new CompleteProfilePhotoReq.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: rental.v1.ICompleteProfilePhotoReq);
+
+            /**
+             * Decodes a CompleteProfilePhotoReq message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns CompleteProfilePhotoReq
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.CompleteProfilePhotoReq;
+
+            /**
+             * Creates a CompleteProfilePhotoReq message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns CompleteProfilePhotoReq
+             */
+            public static fromObject(object: { [k: string]: any }): rental.v1.CompleteProfilePhotoReq;
+
+            /**
+             * Creates a plain object from a CompleteProfilePhotoReq message. Also converts values to other types if specified.
+             * @param message CompleteProfilePhotoReq
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: rental.v1.CompleteProfilePhotoReq, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this CompleteProfilePhotoReq to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
         }
     }
 }

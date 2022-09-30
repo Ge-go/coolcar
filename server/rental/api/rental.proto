@@ -102,4 +102,20 @@ service ProfileService {
   rpc GetProfile (GetProfileReq) returns (Profile);
   rpc SubmitProfile (Identity) returns (Profile);
   rpc ClearProfile (ClearProfileReq) returns (Profile);
+
+  rpc GetProfilePhoto (GetProfilePhotoReq) returns (GetProfilePhotoRsp);
+  rpc CreateProfilePhoto (CreateProfilePhotoReq) returns (CreateProfilePhotoRsp);
+  rpc CompleteProfilePhoto (CompleteProfilePhotoReq) returns (Identity);
 }
+
+message GetProfilePhotoReq {}
+message GetProfilePhotoRsp {
+  string url = 1;
+}
+
+message CreateProfilePhotoReq {}
+message CreateProfilePhotoRsp {
+  string upload_url = 1;
+}
+
+message CompleteProfilePhotoReq {}

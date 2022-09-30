@@ -13,6 +13,7 @@ http:
     - selector: rental.v1.TripService.UpdateTrip
       post: /v1/trip/{id}
       body: "*"
+
     - selector: rental.v1.ProfileService.GetProfile
       get: /v1/profile
     - selector: rental.v1.ProfileService.SubmitProfile
@@ -20,3 +21,12 @@ http:
       body: "*"
     - selector: rental.v1.ProfileService.ClearProfile
       delete: /v1/profile
+
+    - selector: rental.v1.ProfileService.GetProfilePhoto
+        get: /v1/profile/photo
+    - selector: rental.v1.ProfileService.CreateProfilePhoto
+        post: /v1/profile/photo
+        body: "*"
+    - selector: rental.v1.ProfileService.CompleteProfilePhoto
+        post: /v1/profile/photo/complete
+        body: "*

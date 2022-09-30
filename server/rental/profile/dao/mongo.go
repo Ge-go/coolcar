@@ -15,6 +15,7 @@ const (
 	profileField        = "profile"
 	accountIDField      = "accountid"
 	identityStatusField = profileField + ".identitystatus"
+	photoBlobIDField    = "photoblobid"
 )
 
 type Mongo struct {
@@ -28,11 +29,12 @@ func NewMongo(db *mongo.Database) *Mongo {
 }
 
 type ProfileRecord struct {
-	AccountID string            `bson:"accountid"`
-	Profile   *rentalpb.Profile `bson:"profile"`
+	AccountID   string            `bson:"accountid"`
+	Profile     *rentalpb.Profile `bson:"profile"`
+	PhotoBlobID string            `bson:"photoblobid"`
 }
 
-func (m *Mongo) GetProfile(ctx context.Context, aid id.AccountID) (*rentalpb.Profile, error) {
+func (m *Mongo) GetProfile(ctx context.Context, aid id.AccountID) (*ProfileRecord, error) {
 	res := m.col.FindOne(ctx, bson.M{
 		accountIDField: aid.String(),
 	})
@@ -46,16 +48,35 @@ func (m *Mongo) GetProfile(ctx context.Context, aid id.AccountID) (*rentalpb.Pro
 		return nil, fmt.Errorf("cannot decode profile record:%v", err)
 	}
 
-	return pr.Profile, nil
+	return &pr, nil
 }
 
 func (m *Mongo) UpdateProfile(ctx context.Context, aid id.AccountID, prevState rentalpb.IdentityStatus, p *rentalpb.Profile) error {
-	_, err := m.col.UpdateOne(ctx, bson.M{
-		accountIDField:      aid.String(),
+	//可能存在先注册驾驶证,生成blobID,造成下面条件失效,引入ZeroOrDoesNotExist,多条件判断
+	filter := bson.M{
 		identityStatusField: prevState,
-	}, mgo.Set(bson.M{
+	}
+
+	if prevState == rentalpb.IdentityStatus_UNSUBMITTED {
+		filter = mgo.ZeroOrDoesNotExist(identityStatusField, prevState)
+	}
+
+	filter[accountIDField] = aid.String()
+
+	_, err := m.col.UpdateOne(ctx, filter, mgo.Set(bson.M{
 		accountIDField: aid.String(),
 		profileField:   p,
+	}), options.Update().SetUpsert(true))
+
+	return err
+}
+
+func (m *Mongo) UpdateProfilePhoto(ctx context.Context, aid id.AccountID, bid id.BlobID) error {
+	_, err := m.col.UpdateOne(ctx, bson.M{
+		accountIDField: aid.String(),
+	}, mgo.Set(bson.M{
+		accountIDField:   aid.String(),
+		photoBlobIDField: bid.String(),
 	}), options.Update().SetUpsert(true))
 
 	return err

@@ -219,6 +219,9 @@ type ProfileServiceClient interface {
 	GetProfile(ctx context.Context, in *GetProfileReq, opts ...grpc.CallOption) (*Profile, error)
 	SubmitProfile(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Profile, error)
 	ClearProfile(ctx context.Context, in *ClearProfileReq, opts ...grpc.CallOption) (*Profile, error)
+	GetProfilePhoto(ctx context.Context, in *GetProfilePhotoReq, opts ...grpc.CallOption) (*GetProfilePhotoRsp, error)
+	CreateProfilePhoto(ctx context.Context, in *CreateProfilePhotoReq, opts ...grpc.CallOption) (*CreateProfilePhotoRsp, error)
+	CompleteProfilePhoto(ctx context.Context, in *CompleteProfilePhotoReq, opts ...grpc.CallOption) (*Identity, error)
 }
 
 type profileServiceClient struct {
@@ -256,6 +259,33 @@ func (c *profileServiceClient) ClearProfile(ctx context.Context, in *ClearProfil
 	return out, nil
 }
 
+func (c *profileServiceClient) GetProfilePhoto(ctx context.Context, in *GetProfilePhotoReq, opts ...grpc.CallOption) (*GetProfilePhotoRsp, error) {
+	out := new(GetProfilePhotoRsp)
+	err := c.cc.Invoke(ctx, "/rental.v1.ProfileService/GetProfilePhoto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) CreateProfilePhoto(ctx context.Context, in *CreateProfilePhotoReq, opts ...grpc.CallOption) (*CreateProfilePhotoRsp, error) {
+	out := new(CreateProfilePhotoRsp)
+	err := c.cc.Invoke(ctx, "/rental.v1.ProfileService/CreateProfilePhoto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileServiceClient) CompleteProfilePhoto(ctx context.Context, in *CompleteProfilePhotoReq, opts ...grpc.CallOption) (*Identity, error) {
+	out := new(Identity)
+	err := c.cc.Invoke(ctx, "/rental.v1.ProfileService/CompleteProfilePhoto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProfileServiceServer is the server API for ProfileService service.
 // All implementations must embed UnimplementedProfileServiceServer
 // for forward compatibility
@@ -263,6 +293,9 @@ type ProfileServiceServer interface {
 	GetProfile(context.Context, *GetProfileReq) (*Profile, error)
 	SubmitProfile(context.Context, *Identity) (*Profile, error)
 	ClearProfile(context.Context, *ClearProfileReq) (*Profile, error)
+	GetProfilePhoto(context.Context, *GetProfilePhotoReq) (*GetProfilePhotoRsp, error)
+	CreateProfilePhoto(context.Context, *CreateProfilePhotoReq) (*CreateProfilePhotoRsp, error)
+	CompleteProfilePhoto(context.Context, *CompleteProfilePhotoReq) (*Identity, error)
 	mustEmbedUnimplementedProfileServiceServer()
 }
 
@@ -278,6 +311,15 @@ func (UnimplementedProfileServiceServer) SubmitProfile(context.Context, *Identit
 }
 func (UnimplementedProfileServiceServer) ClearProfile(context.Context, *ClearProfileReq) (*Profile, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ClearProfile not implemented")
+}
+func (UnimplementedProfileServiceServer) GetProfilePhoto(context.Context, *GetProfilePhotoReq) (*GetProfilePhotoRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProfilePhoto not implemented")
+}
+func (UnimplementedProfileServiceServer) CreateProfilePhoto(context.Context, *CreateProfilePhotoReq) (*CreateProfilePhotoRsp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProfilePhoto not implemented")
+}
+func (UnimplementedProfileServiceServer) CompleteProfilePhoto(context.Context, *CompleteProfilePhotoReq) (*Identity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompleteProfilePhoto not implemented")
 }
 func (UnimplementedProfileServiceServer) mustEmbedUnimplementedProfileServiceServer() {}
 
@@ -346,6 +388,60 @@ func _ProfileService_ClearProfile_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProfileService_GetProfilePhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetProfilePhotoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).GetProfilePhoto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rental.v1.ProfileService/GetProfilePhoto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).GetProfilePhoto(ctx, req.(*GetProfilePhotoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_CreateProfilePhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateProfilePhotoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).CreateProfilePhoto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rental.v1.ProfileService/CreateProfilePhoto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).CreateProfilePhoto(ctx, req.(*CreateProfilePhotoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ProfileService_CompleteProfilePhoto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompleteProfilePhotoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServiceServer).CompleteProfilePhoto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rental.v1.ProfileService/CompleteProfilePhoto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServiceServer).CompleteProfilePhoto(ctx, req.(*CompleteProfilePhotoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProfileService_ServiceDesc is the grpc.ServiceDesc for ProfileService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -364,6 +460,18 @@ var ProfileService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ClearProfile",
 			Handler:    _ProfileService_ClearProfile_Handler,
+		},
+		{
+			MethodName: "GetProfilePhoto",
+			Handler:    _ProfileService_GetProfilePhoto_Handler,
+		},
+		{
+			MethodName: "CreateProfilePhoto",
+			Handler:    _ProfileService_CreateProfilePhoto_Handler,
+		},
+		{
+			MethodName: "CompleteProfilePhoto",
+			Handler:    _ProfileService_CompleteProfilePhoto_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
