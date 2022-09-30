@@ -5,11 +5,18 @@ import (
 	blobpb "coolcar/blob/api/gen/v1"
 	"coolcar/blob/blob"
 	"coolcar/blob/blob/dao"
+	"coolcar/blob/cos"
 	"coolcar/shared/server"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"log"
+)
+
+const (
+	cosAddr = "https://coolcar-1300439358.cos.ap-guangzhou.myqcloud.com"
+	secID   = "$$"
+	secKey  = "$$"
 )
 
 func main() {
@@ -23,14 +30,20 @@ func main() {
 		log.Fatalf("cannot connect mongo:%v", err)
 	}
 
+	st, err := cos.NewService(cosAddr, secID, secKey)
+	if err != nil {
+		log.Fatalf("cannot new cos service:%v", err)
+	}
+
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
 		Name:   "blob",
 		Addr:   ":8083",
 		Logger: logger,
 		RegisterFunc: func(s *grpc.Server) {
 			blobpb.RegisterBlobServiceServer(s, &blob.Service{
-				Mongo:  dao.NewMongo(mgClient.Database("coolcar")),
-				Logger: logger,
+				Storage: st,
+				Mongo:   dao.NewMongo(mgClient.Database("coolcar")),
+				Logger:  logger,
 			})
 		},
 	}))

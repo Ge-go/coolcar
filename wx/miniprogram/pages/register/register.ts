@@ -55,14 +55,14 @@ Page({
           })
 
           // cos上传img
-          // const data = wx.getFileSystemManager().readFileSync(res.tempFiles[0].tempFilePath)
-          // wx.request({
-          //   method: 'PUT',
-          //   url: 'https://coolcar-1300439358.cos.ap-guangzhou.myqcloud.com/imageCheck.png?q-sign-algorithm=sha1&q-ak=AKIDPo0rcDdomX5PXTHuLZZNM7ex4zg9QVMz&q-sign-time=1664437670%3B1664441270&q-key-time=1664437670%3B1664441270&q-header-list=host&q-url-param-list=&q-signature=f54d587555a9f8d8a136ee12ba829c9e1d226b05',
-          //   data,
-          //   success: console.log,
-          //   fail: console.error
-          // })
+          const data = wx.getFileSystemManager().readFileSync(res.tempFiles[0].tempFilePath)
+          wx.request({
+            method: 'PUT',
+            url: 'https://coolcar-1300439358.cos.ap-guangzhou.myqcloud.com/accountWs/6336a6fe2710f39b9a5764d8?q-sign-algorithm=sha1&q-ak=AKIDhMqDapuqdHuy1ylS1UpzyqfMwOwZG3pX&q-sign-time=1664526078%3B1664527078&q-key-time=1664526078%3B1664527078&q-header-list=host&q-url-param-list=&q-signature=8757b118e1ab9631cff5f46d220e8bd471cd23c2',
+            data,
+            success: console.log,
+            fail: console.error
+          })
         }
       },
     })

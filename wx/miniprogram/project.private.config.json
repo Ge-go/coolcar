@@ -11,7 +11,7 @@
       "list": [
         {
           "name": "",
-          "pathName": "pages/lock/lock",
+          "pathName": "pages/register/register",
           "query": "car_id=demo_car",
           "launchMode": "default",
           "scene": null

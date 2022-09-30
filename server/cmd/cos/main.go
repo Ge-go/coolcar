@@ -2,33 +2,37 @@ package main
 
 import (
 	"context"
+	blobpb "coolcar/blob/api/gen/v1"
 	"fmt"
-	"github.com/tencentyun/cos-go-sdk-v5"
-	"net/http"
-	"net/url"
-	"time"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
-	u, err := url.Parse("https://coolcar-1300439358.cos.ap-guangzhou.myqcloud.com")
+	conn, err := grpc.Dial("localhost:8083", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		panic(err)
 	}
-	su, _ := url.Parse("https://cos.COS_REGION.myqcloud.com")
-	b := &cos.BaseURL{BucketURL: u, ServiceURL: su}
-	id := "$$"
-	key := "$$"
-	client := cos.NewClient(b, &http.Client{
-		Transport: &cos.AuthorizationTransport{
-			SecretID:  id,
-			SecretKey: key,
-		},
-	})
 
-	name := "imageCheck.png"
-	presignedURL, err := client.Object.GetPresignedURL(context.Background(), http.MethodGet, name, id, key, 1*time.Hour, nil)
+	c := blobpb.NewBlobServiceClient(conn)
+	//res, err := c.CreateBlob(context.Background(), &blobpb.CreateBlobReq{
+	//	AccountId:           "accountWs",
+	//	UploadUrlTimeoutSec: 1000,
+	//})
+	//if err != nil {
+	//	panic(err)
+	//}
+	//res, err := c.GetBlob(context.Background(), &blobpb.GetBlobReq{
+	//	Id: "6336a6fe2710f39b9a5764d8",
+	//})
+
+	res, err := c.GetBlobURL(context.Background(), &blobpb.GetBlobURLReq{
+		Id:         "6336a6fe2710f39b9a5764d8",
+		TimeoutSec: 100,
+	})
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(presignedURL)
+
+	fmt.Printf("%+v\n", res)
 }

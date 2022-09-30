@@ -4,6 +4,7 @@ import (
 	"context"
 	"coolcar/shared/id"
 	mgo "coolcar/shared/mongo"
+	"coolcar/shared/mongo/objid"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,8 +13,6 @@ import (
 type Mongo struct {
 	col *mongo.Collection
 }
-
-const aidFiled = "accountid"
 
 func NewMongo(db *mongo.Database) *Mongo {
 	return &Mongo{
@@ -33,7 +32,7 @@ func (m *Mongo) CreateBlob(ctx context.Context, aid id.AccountID) (*BlobRecord, 
 	}
 	br.ID = mgo.NewObjID()
 
-	path := fmt.Sprintf("%s/%s", aid.String(), br.ID)
+	path := fmt.Sprintf("%s/%s", aid.String(), br.ID.Hex())
 	br.Path = path
 
 	_, err := m.col.InsertOne(ctx, br)
@@ -45,8 +44,12 @@ func (m *Mongo) CreateBlob(ctx context.Context, aid id.AccountID) (*BlobRecord, 
 }
 
 func (m *Mongo) GetBlob(ctx context.Context, id id.BlobID) (*BlobRecord, error) {
+	objID, err := objid.FromID(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid object id: %v", err)
+	}
 	res := m.col.FindOne(ctx, bson.M{
-		aidFiled: id.String(),
+		mgo.IDFieldName: objID,
 	})
 
 	if err := res.Err(); err != nil {
