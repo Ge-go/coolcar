@@ -15,21 +15,7 @@ import (
 //测试Profile提交服务
 func Test_Profile(t *testing.T) {
 	ctx := context.Background()
-	client, err := mongotesting.NewClient(ctx)
-	if err != nil {
-		t.Fatalf("cannot mongotesting new client:%v", err)
-	}
-	m := dao.NewMongo(client.Database("coolcar"))
-	mongotesting.SetupIndex(ctx, client.Database("coolcar"))
-	logger, err := server.NewZapLogger()
-	if err != nil {
-		t.Fatalf("cannot new zaplogger:%v", err)
-	}
-
-	s := &Service{
-		Mongo:  m,
-		Logger: logger,
-	}
+	s := newService(ctx, t)
 
 	aid := id.AccountID("account1")
 	ctx = auth.ContextWithAccountID(ctx, aid)
@@ -76,7 +62,7 @@ func Test_Profile(t *testing.T) {
 					},
 					IdentityStatus: rentalpb.IdentityStatus_VERIFIED,
 				}
-				err = s.Mongo.UpdateProfile(ctx, aid, rentalpb.IdentityStatus_PENDING, p)
+				err := s.Mongo.UpdateProfile(ctx, aid, rentalpb.IdentityStatus_PENDING, p)
 				if err != nil {
 					return nil, err
 				}
@@ -111,6 +97,26 @@ func Test_Profile(t *testing.T) {
 			t.Errorf("i'v want status %v;but got %v;", v.wantStatus, p.IdentityStatus)
 		}
 	}
+}
+
+func newService(ctx context.Context, t *testing.T) *Service {
+	mc, err := mongotesting.NewClient(ctx)
+	if err != nil {
+		t.Fatalf("cannot create new mongo client:%v", err)
+	}
+
+	db := mc.Database("trip")
+	mongotesting.SetupIndex(ctx, db)
+	logger, err := server.NewZapLogger()
+	if err != nil {
+		t.Fatalf("cannot create logger:%v", err)
+	}
+
+	s := Service{
+		Mongo:  dao.NewMongo(db),
+		Logger: logger,
+	}
+	return &s
 }
 
 func TestMain(m *testing.M) {

@@ -155,12 +155,46 @@ func (s *Service) CreateProfilePhoto(ctx context.Context, req *rentalpb.CreatePr
 }
 
 func (s *Service) CompleteProfilePhoto(ctx context.Context, req *rentalpb.CompleteProfilePhotoReq) (*rentalpb.Identity, error) {
-	//aid, err := auth.AccountIDFromContext(ctx)
-	//if err != nil {
-	//	return nil, err
-	//}
+	aid, err := auth.AccountIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	pr, err := s.Mongo.GetProfile(ctx, aid)
+
+	if err != nil {
+		return nil, status.Error(s.logAndConvertProfileErr(err), "")
+	}
+
+	br, err := s.BlobClient.GetBlob(ctx, &blobpb.GetBlobReq{Id: pr.PhotoBlobID})
+	if err != nil {
+		s.Logger.Error("cannot get blob", zap.Error(err))
+		return nil, status.Error(codes.Aborted, "")
+	}
+
+	s.Logger.Info("got profile photo", zap.Int("size", len(br.Data)))
+
+	return &rentalpb.Identity{
+		LicNumber:       "123456",
+		Name:            "ws",
+		Gender:          rentalpb.Gender_MALE,
+		BirthDateMillis: 631152000000,
+	}, nil
+}
+
+func (s *Service) ClearProfilePhoto(ctx context.Context, req *rentalpb.ClearProfilePhotoReq) (*rentalpb.ClearProfilePhotoRsp, error) {
+	aid, err := auth.AccountIDFromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.Mongo.UpdateProfilePhoto(ctx, aid, "")
+	if err != nil {
+		s.Logger.Error("cannot clear profile photo", zap.Error(err))
+		return nil, status.Error(codes.Internal, "")
+	}
+
+	return &rentalpb.ClearProfilePhotoRsp{}, nil
 }
 
 func (s *Service) logAndConvertProfileErr(err error) codes.Code {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	blobpb "coolcar/blob/api/gen/v1"
 	rentalpb "coolcar/rental/api/gen/v1"
 	"coolcar/rental/profile"
 	daoProfile "coolcar/rental/profile/dao"
@@ -15,6 +16,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"log"
+	"time"
 )
 
 func main() {
@@ -32,9 +34,16 @@ func main() {
 	dbTp := daoTrip.NewMongo(mgClient.Database("coolcar"))
 	dbPf := daoProfile.NewMongo(mgClient.Database("coolcar"))
 
+	blobConn, err := grpc.Dial("localhost:8083", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("cannot dial blobConn:%v", err)
+	}
 	pfService := &profile.Service{
-		Mongo:  dbPf,
-		Logger: logger,
+		BlobClient:        blobpb.NewBlobServiceClient(blobConn),
+		PhotoGetExpire:    5 * time.Second,
+		PhotoCreateExpire: 10 * time.Second,
+		Mongo:             dbPf,
+		Logger:            logger,
 	}
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
 		RSAPublicKey: publicKey,

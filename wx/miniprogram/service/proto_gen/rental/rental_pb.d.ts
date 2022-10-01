@@ -984,6 +984,20 @@ export namespace rental {
              * @returns Promise
              */
             public completeProfilePhoto(request: rental.v1.ICompleteProfilePhotoReq): Promise<rental.v1.Identity>;
+
+            /**
+             * Calls ClearProfilePhoto.
+             * @param request ClearProfilePhotoReq message or plain object
+             * @param callback Node-style callback called with the error, if any, and ClearProfilePhotoRsp
+             */
+            public clearProfilePhoto(request: rental.v1.IClearProfilePhotoReq, callback: rental.v1.ProfileService.ClearProfilePhotoCallback): void;
+
+            /**
+             * Calls ClearProfilePhoto.
+             * @param request ClearProfilePhotoReq message or plain object
+             * @returns Promise
+             */
+            public clearProfilePhoto(request: rental.v1.IClearProfilePhotoReq): Promise<rental.v1.ClearProfilePhotoRsp>;
         }
 
         namespace ProfileService {
@@ -1029,6 +1043,13 @@ export namespace rental {
              * @param [response] Identity
              */
             type CompleteProfilePhotoCallback = (error: (Error|null), response?: rental.v1.Identity) => void;
+
+            /**
+             * Callback as used by {@link rental.v1.ProfileService#clearProfilePhoto}.
+             * @param error Error, if any
+             * @param [response] ClearProfilePhotoRsp
+             */
+            type ClearProfilePhotoCallback = (error: (Error|null), response?: rental.v1.ClearProfilePhotoRsp) => void;
         }
 
         /** Properties of a GetProfilePhotoReq. */
@@ -1263,6 +1284,96 @@ export namespace rental {
 
             /**
              * Converts this CompleteProfilePhotoReq to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a ClearProfilePhotoReq. */
+        interface IClearProfilePhotoReq {
+        }
+
+        /** Represents a ClearProfilePhotoReq. */
+        class ClearProfilePhotoReq implements IClearProfilePhotoReq {
+
+            /**
+             * Constructs a new ClearProfilePhotoReq.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: rental.v1.IClearProfilePhotoReq);
+
+            /**
+             * Decodes a ClearProfilePhotoReq message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ClearProfilePhotoReq
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.ClearProfilePhotoReq;
+
+            /**
+             * Creates a ClearProfilePhotoReq message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ClearProfilePhotoReq
+             */
+            public static fromObject(object: { [k: string]: any }): rental.v1.ClearProfilePhotoReq;
+
+            /**
+             * Creates a plain object from a ClearProfilePhotoReq message. Also converts values to other types if specified.
+             * @param message ClearProfilePhotoReq
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: rental.v1.ClearProfilePhotoReq, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ClearProfilePhotoReq to JSON.
+             * @returns JSON object
+             */
+            public toJSON(): { [k: string]: any };
+        }
+
+        /** Properties of a ClearProfilePhotoRsp. */
+        interface IClearProfilePhotoRsp {
+        }
+
+        /** Represents a ClearProfilePhotoRsp. */
+        class ClearProfilePhotoRsp implements IClearProfilePhotoRsp {
+
+            /**
+             * Constructs a new ClearProfilePhotoRsp.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: rental.v1.IClearProfilePhotoRsp);
+
+            /**
+             * Decodes a ClearProfilePhotoRsp message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns ClearProfilePhotoRsp
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rental.v1.ClearProfilePhotoRsp;
+
+            /**
+             * Creates a ClearProfilePhotoRsp message from a plain object. Also converts values to their respective internal types.
+             * @param object Plain object
+             * @returns ClearProfilePhotoRsp
+             */
+            public static fromObject(object: { [k: string]: any }): rental.v1.ClearProfilePhotoRsp;
+
+            /**
+             * Creates a plain object from a ClearProfilePhotoRsp message. Also converts values to other types if specified.
+             * @param message ClearProfilePhotoRsp
+             * @param [options] Conversion options
+             * @returns Plain object
+             */
+            public static toObject(message: rental.v1.ClearProfilePhotoRsp, options?: $protobuf.IConversionOptions): { [k: string]: any };
+
+            /**
+             * Converts this ClearProfilePhotoRsp to JSON.
              * @returns JSON object
              */
             public toJSON(): { [k: string]: any };
