@@ -11,8 +11,8 @@
       "list": [
         {
           "name": "",
-          "pathName": "pages/register/register",
-          "query": "car_id=demo_car",
+          "pathName": "pages/driving/driving",
+          "query": "",
           "launchMode": "default",
           "scene": null
         }

@@ -251,11 +251,15 @@ type carManager struct {
 	verifyErr error
 }
 
-func (c *carManager) Verify(ctx context.Context, id id.CarID) error {
+func (c *carManager) Verify(ctx context.Context, carID id.CarID, location *rentalpb.Location) error {
 	return c.verifyErr
 }
 
-func (c *carManager) Unlock(ctx context.Context, id id.CarID) error {
+func (c *carManager) Unlock(ctx context.Context, cid id.CarID, aid id.AccountID, tid id.TripID, avatarURL string) error {
+	return c.unlockErr
+}
+
+func (c *carManager) Lock(ctx context.Context, cid id.CarID) error {
 	return nil
 }
 

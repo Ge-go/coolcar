@@ -296,6 +296,9 @@ export namespace rental {
 
             /** CreateTripReq carId */
             carId?: (string|null);
+
+            /** CreateTripReq avatarUrl */
+            avatarUrl?: (string|null);
         }
 
         /** Represents a CreateTripReq. */
@@ -312,6 +315,9 @@ export namespace rental {
 
             /** CreateTripReq carId. */
             public carId: string;
+
+            /** CreateTripReq avatarUrl. */
+            public avatarUrl: string;
 
             /**
              * Decodes a CreateTripReq message from the specified reader or buffer.

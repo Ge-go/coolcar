@@ -2,21 +2,17 @@ package main
 
 import (
 	"context"
-	blobpb "coolcar/blob/api/gen/v1"
-	"coolcar/blob/blob"
-	"coolcar/blob/blob/dao"
-	"coolcar/blob/cos"
+	"coolcar/car/amqpclt"
+	carpb "coolcar/car/api/gen/v1"
+	"coolcar/car/car"
+	"coolcar/car/dao"
 	"coolcar/shared/server"
+	"github.com/streadway/amqp"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"log"
-)
-
-const (
-	cosAddr = "https://coolcar-1300439358&82123.cos.ap-guangzhou.myqcloud.com"
-	secID   = "AK%%IDhMqDapuqdHuy1ylS1UpzyqfMwOwZG3&&pX"
-	secKey  = "uq%%nbGlDXitT0Y9^^8EOPLBtQjrnW3SAm&&Nx"
 )
 
 func main() {
@@ -30,20 +26,27 @@ func main() {
 		log.Fatalf("cannot connect mongo:%v", err)
 	}
 
-	st, err := cos.NewService(cosAddr, secID, secKey)
+	carMgo := dao.NewMongo(mgClient.Database("coolcar"))
+
+	amqpConn, err := amqp.Dial("amqp://guest:guest@121.37.232.8:5672/")
 	if err != nil {
-		log.Fatalf("cannot new cos service:%v", err)
+		logger.Fatal("cannot dial amqp", zap.Error(err))
+	}
+
+	pub, err := amqpclt.NewPublisher(amqpConn, "coolcar")
+	if err != nil {
+		logger.Fatal("cannot create publisher", zap.Error(err))
 	}
 
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
-		Name:   "blob",
-		Addr:   ":8083",
+		Name:   "car",
+		Addr:   ":8084",
 		Logger: logger,
 		RegisterFunc: func(s *grpc.Server) {
-			blobpb.RegisterBlobServiceServer(s, &blob.Service{
-				Storage: st,
-				Mongo:   dao.NewMongo(mgClient.Database("coolcar")),
-				Logger:  logger,
+			carpb.RegisterCarServiceServer(s, &car.Service{
+				Logger:    logger,
+				Mongo:     carMgo,
+				Publisher: pub,
 			})
 		},
 	}))

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package rental.v1;
-option go_package = "coolcar/auth/api/gen/v1;rentalpb";
+option go_package = "coolcar/rental/api/gen/v1;rentalpb";
 
 //坐标
 message Location{
@@ -43,6 +43,7 @@ message Trip {
 message CreateTripReq {
   Location start = 1;
   string car_id = 2;
+  string avatar_url = 3;
 }
 
 message GetTripReq {

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	blobpb "coolcar/blob/api/gen/v1"
+	carpb "coolcar/car/api/gen/v1"
 	rentalpb "coolcar/rental/api/gen/v1"
 	"coolcar/rental/profile"
 	daoProfile "coolcar/rental/profile/dao"
@@ -38,6 +39,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("cannot dial blobConn:%v", err)
 	}
+
+	carConn, err := grpc.Dial("localhost:8084", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("cannot dial carConn:%v", err)
+	}
+
 	pfService := &profile.Service{
 		BlobClient:        blobpb.NewBlobServiceClient(blobConn),
 		PhotoGetExpire:    5 * time.Second,
@@ -55,7 +62,9 @@ func main() {
 				Log:        logger,
 				POIManager: &poi.Manager{},
 				Mongo:      dbTp,
-				CarManager: &car.Manager{},
+				CarManager: &car.Manager{
+					CarService: carpb.NewCarServiceClient(carConn),
+				},
 				ProfileManager: &profileClient.Manager{
 					Fetcher: pfService,
 				},

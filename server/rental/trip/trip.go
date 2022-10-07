@@ -6,6 +6,7 @@ import (
 	"coolcar/rental/trip/dao"
 	"coolcar/shared/auth"
 	"coolcar/shared/id"
+	"coolcar/shared/mongo/objid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -31,8 +32,9 @@ type ProfileManager interface {
 
 // CarManager defines the ACL for car management
 type CarManager interface {
-	Verify(context.Context, id.CarID) error
-	Unlock(context.Context, id.CarID) error
+	Verify(context.Context, id.CarID, *rentalpb.Location) error
+	Unlock(ctx context.Context, cid id.CarID, aid id.AccountID, tid id.TripID, avatarURL string) error
+	Lock(ctx context.Context, cid id.CarID) error
 }
 
 // POIManager resolves POI
@@ -59,7 +61,7 @@ func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (
 
 	//检查车辆状态
 	carID := id.CarID(req.CarId)
-	if err = s.CarManager.Verify(ctx, carID); err != nil {
+	if err = s.CarManager.Verify(ctx, carID, nil); err != nil {
 		return nil, status.Error(codes.FailedPrecondition, err.Error())
 	}
 
@@ -86,7 +88,7 @@ func (s *Service) CreateTrip(ctx context.Context, req *rentalpb.CreateTripReq) (
 	//车辆开锁
 	go func() {
 		//新起一个服务
-		err := s.CarManager.Unlock(context.Background(), carID)
+		err := s.CarManager.Unlock(context.Background(), carID, aid, objid.ToTripID(tr.ID), req.AvatarUrl)
 		if err != nil {
 			//这里在真实环境是否需要多一个上报需求
 			s.Log.Error("cannot unlock car", zap.Error(err))
@@ -163,6 +165,11 @@ func (s *Service) UpdateTrip(ctx context.Context, req *rentalpb.UpdateTripReq) (
 		//结束行程
 		trip.Trip.End = trip.Trip.Current
 		trip.Trip.Status = rentalpb.TripStatus_FINISHED
+
+		err = s.CarManager.Lock(ctx, id.CarID(trip.Trip.CarId))
+		if err != nil {
+			return nil, status.Errorf(codes.FailedPrecondition, "cannot unlock car:%v", err)
+		}
 	}
 	err = s.Mongo.UpdateTrip(ctx, id.TripID(req.Id), accountID, trip.UpdatedAt, trip.Trip)
 	if err != nil {
@@ -182,6 +189,7 @@ const (
 	kmPerSec    = 0.02
 )
 
+//识别地址服务
 func (s *Service) calcCurrentStatus(ctx context.Context, last *rentalpb.LocationStatus, cur *rentalpb.Location) *rentalpb.LocationStatus {
 	now := nowFunc()
 	elapsedSec := float64(now - last.TimestampSec)
