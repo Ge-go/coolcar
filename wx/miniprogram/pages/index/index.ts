@@ -109,7 +109,7 @@ Page({
     wx.scanCode({
       success: async () => {
         //TODO: 模拟获取car_id  为了方便后续页面接入(是否还需要再包装)
-        const carID = 'car123'
+        const carID = '633fe74af1c33f573d512450'
         const lockURL = routing.lock({
           car_id: carID
         })

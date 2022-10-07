@@ -22,6 +22,7 @@ function formatFee(cents: number) {  //费用计算
 }
 
 Page({
+    tripID: '',
     timer: undefined as undefined | number,  //租车时间
     data: {
         location: {
@@ -87,15 +88,23 @@ Page({
     //结束行程  是否结束行程->判断是否在指定区域内->进入到结算页面(携带数据)
     onEndTripTap() {
         //TODO:请求后台是否处于指定区域
+        TripService.finishTrip(this.tripID).then(() => {
+            wx.redirectTo({
+                url: routing.mytrips(),
+            })
+        }).catch(err => {
+            console.error(err)
+            wx.showToast({
+                title: '结束行程失败',
+                icon: 'none',
+            })
+        })
 
         //结算中
         wx.showLoading({
             title: '结算中',
             mask: true,
         })
-        setTimeout(() => {
-            wx.hideLoading()
-        }, 500)
 
         //弹窗
         this.setData({
