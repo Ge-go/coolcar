@@ -50,7 +50,7 @@ export namespace TripService {
             return Promise.reject("must specify id")
         }
         return Coolcar.sendRequestWithAuthRetry({
-            method: 'PUT',
+            method: 'POST',
             path: `/v1/trip/${encodeURIComponent(r.id)}`,
             data: r,
             respMarshaller: rental.v1.Trip.fromObject,

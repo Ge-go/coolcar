@@ -100,6 +100,19 @@ func (s *Subscriber) SubscribeRaw(ctx context.Context) (<-chan amqp.Delivery, fu
 		return nil, closeCh, fmt.Errorf("cannot declare chan:%v", err)
 	}
 
+	cleanUp := func() {
+		_, err := ch.QueueDelete(
+			q.Name,
+			false,
+			false,
+			false,
+		)
+		if err != nil {
+			s.Logger.Error("cannot delete queue", zap.String("name", q.Name), zap.Error(err))
+		}
+		closeCh()
+	}
+
 	err = ch.QueueBind(
 		q.Name,
 		"", // key
@@ -108,7 +121,7 @@ func (s *Subscriber) SubscribeRaw(ctx context.Context) (<-chan amqp.Delivery, fu
 		nil,
 	)
 	if err != nil {
-		return nil, closeCh, fmt.Errorf("cannot bind chan:%v", err)
+		return nil, cleanUp, fmt.Errorf("cannot bind chan:%v", err)
 	}
 
 	msgs, err := ch.Consume(
@@ -121,19 +134,18 @@ func (s *Subscriber) SubscribeRaw(ctx context.Context) (<-chan amqp.Delivery, fu
 		nil,
 	)
 	if err != nil {
-		return nil, closeCh, fmt.Errorf("cannot Consume chan:%v", err)
+		return nil, cleanUp, fmt.Errorf("cannot Consume chan:%v", err)
 	}
 
-	return msgs, closeCh, nil
+	return msgs, cleanUp, nil
 }
 
-func (s *Subscriber) Subscribe(ctx context.Context) (chan *carpb.CarEntity, error) {
+func (s *Subscriber) Subscribe(ctx context.Context) (chan *carpb.CarEntity, func(), error) {
+	// closeChanFunc 由外部调用者自己手动释放资源,它会自己决定该释放的时间点
 	msgChan, closeChanFunc, err := s.SubscribeRaw(ctx)
 
-	//TODO
-	closeChanFunc()
 	if err != nil {
-		return nil, err
+		return nil, closeChanFunc, err
 	}
 
 	carCh := make(chan *carpb.CarEntity)
@@ -150,7 +162,7 @@ func (s *Subscriber) Subscribe(ctx context.Context) (chan *carpb.CarEntity, erro
 		close(carCh)
 	}()
 
-	return carCh, nil
+	return carCh, closeChanFunc, nil
 }
 
 func declareExchange(ch *amqp.Channel, exchange string) error {

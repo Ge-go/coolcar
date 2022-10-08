@@ -29,6 +29,6 @@ function genProto() {
 }
 
 #genProto auth
-genProto rental
+#genProto rental
 #genProto blob 1
 #genProto car

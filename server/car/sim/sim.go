@@ -5,26 +5,37 @@ import (
 	carpb "coolcar/car/api/gen/v1"
 	"fmt"
 	"go.uber.org/zap"
+	"time"
 )
 
 type Subscriber interface {
-	Subscribe(ctx context.Context) (chan *carpb.CarEntity, error)
+	Subscribe(ctx context.Context) (chan *carpb.CarEntity, func(), error)
 }
 
 type Controller struct {
 	Subscriber Subscriber
 
 	CarService carpb.CarServiceClient
-	Logger     zap.Logger
+	Logger     *zap.Logger
 }
 
 func (c *Controller) RunSimulations(ctx context.Context) error {
-	res, err := c.CarService.GetCars(ctx, &carpb.GetCarsReq{})
-	if err != nil {
-		c.Logger.Error("cannot get cars", zap.Error(err))
+	var cars []*carpb.CarEntity
+	for {
+		time.Sleep(3e9)
+		res, err := c.CarService.GetCars(ctx, &carpb.GetCarsReq{})
+		if err != nil {
+			c.Logger.Error("cannot get cars", zap.Error(err))
+		}
+		cars = res.Cars
+		break
 	}
 
-	msgCh, err := c.Subscriber.Subscribe(ctx)
+	c.Logger.Info("Running car Simulations.", zap.Int("car_count", len(cars)))
+
+	msgCh, cleanUp, err := c.Subscriber.Subscribe(ctx)
+	defer cleanUp()
+
 	if err != nil {
 		c.Logger.Error("cannot subscribe", zap.Error(err))
 		return fmt.Errorf("cannot subscribe:%v", err)
@@ -32,7 +43,7 @@ func (c *Controller) RunSimulations(ctx context.Context) error {
 
 	// 把所有Cars丢入map  if cars too many , should be optimization map
 	carChans := make(map[string]chan *carpb.Car)
-	for _, car := range res.Cars {
+	for _, car := range cars {
 		ch := make(chan *carpb.Car)
 		carChans[car.Id] = ch
 		// SimulateCar with car date
@@ -52,6 +63,7 @@ func (c *Controller) RunSimulations(ctx context.Context) error {
 
 func (c *Controller) SimulateCar(ctx context.Context, initial *carpb.CarEntity, ch chan *carpb.Car) {
 	carID := initial.Id
+	c.Logger.Info("Simulating car.", zap.String("id", carID))
 
 	for update := range ch {
 		if update.Status == carpb.CarStatus_UNLOCKING {

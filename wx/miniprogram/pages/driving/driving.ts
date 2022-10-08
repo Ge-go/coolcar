@@ -39,8 +39,8 @@ Page({
         const o: routing.DrivingOpts = opt
         console.log("current trip", o.trip_id)
 
-        o.trip_id = '6332f869fcea179722eca340'
         TripService.GetTrip(o.trip_id).then(console.log)
+        this.tripID = o.trip_id
 
         this.setupLocationUpdator()
         this.setupTimer()

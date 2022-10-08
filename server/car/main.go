@@ -6,6 +6,7 @@ import (
 	carpb "coolcar/car/api/gen/v1"
 	"coolcar/car/car"
 	"coolcar/car/dao"
+	"coolcar/car/sim"
 	"coolcar/shared/server"
 	"github.com/streadway/amqp"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -37,6 +38,25 @@ func main() {
 	if err != nil {
 		logger.Fatal("cannot create publisher", zap.Error(err))
 	}
+
+	sub, err := amqpclt.NewSubscriber(amqpConn, "coolcar", logger)
+	if err != nil {
+		logger.Fatal("cannot create subscriber", zap.Error(err))
+	}
+
+	// grpc 在dial的时候是不会去建立连接的,建立连接是在内部调用rpc方法时去走的
+	carClient, err := grpc.Dial("localhost:8084", grpc.WithInsecure())
+	if err != nil {
+		logger.Fatal("cannot dial car service", zap.Error(err))
+	}
+
+	simController := &sim.Controller{
+		CarService: carpb.NewCarServiceClient(carClient),
+		Subscriber: sub,
+		Logger:     logger,
+	}
+
+	go simController.RunSimulations(context.Background())
 
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
 		Name:   "car",
