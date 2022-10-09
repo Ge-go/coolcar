@@ -1,3 +1,4 @@
+import { CarService } from "../../service/car"
 import { ProfileService } from "../../service/profile"
 import { rental } from "../../service/proto_gen/rental/rental_pb"
 import { TripService } from "../../service/trip"
@@ -61,23 +62,11 @@ Page({
   },
 
   async onLoad() {  //目前能力只有手动拉起头像
-    this.socket = wx.connectSocket({
-      url: 'ws://localhost:9090/ws'
-    })
-
-    let msgReceived = 0
-    this.socket.onMessage(msg => {
-      msgReceived++
-      console.log(msg)
-    })
-
-    setInterval(() => {
-      this.socket?.send({
-        data: JSON.stringify({
-          msg_reveiced: msgReceived
-        })
-      })
-    }, 3000)
+    this.socket = CarService.subscribe(
+      msg => {
+        console.log(msg)
+      }
+    )
 
     wx.getUserProfile({
       desc: '用于完善会员资料', // 声明获取用户个人信息后的用途，后续会展示在弹窗中，请谨慎填写
@@ -91,6 +80,9 @@ Page({
   },
 
   onMyLocationTap() {
+    //自动关闭socket
+    this.socket?.close({
+    })
     wx.getLocation({
       type: 'gcj02',
       success: res => {

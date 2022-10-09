@@ -14,9 +14,9 @@ import (
 )
 
 const (
-	cosAddr = "https://coolcar-1300439358&82123.cos.ap-guangzhou.myqcloud.com"
-	secID   = "AK%%IDhMqDapuqdHuy1ylS1UpzyqfMwOwZG3&&pX"
-	secKey  = "uq%%nbGlDXitT0Y9^^8EOPLBtQjrnW3SAm&&Nx"
+	cosAddr = "https://coolcar-1300439358.cos.ap-guangzhou.myqcloud.com"
+	secID   = "AKIDhMqDapuqdHuy1ylS1UpzyqfMwOwZG3pX"
+	secKey  = "uqnbGlDXitT0Y98EOPLBtQjrnW3SAmNx"
 )
 
 func main() {

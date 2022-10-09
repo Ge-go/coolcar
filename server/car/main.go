@@ -2,18 +2,21 @@ package main
 
 import (
 	"context"
-	"coolcar/car/amqpclt"
 	carpb "coolcar/car/api/gen/v1"
 	"coolcar/car/car"
 	"coolcar/car/dao"
+	"coolcar/car/mq/amqpclt"
 	"coolcar/car/sim"
+	"coolcar/car/ws"
 	"coolcar/shared/server"
+	"github.com/gorilla/websocket"
 	"github.com/streadway/amqp"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"log"
+	"net/http"
 )
 
 func main() {
@@ -56,7 +59,24 @@ func main() {
 		Logger:     logger,
 	}
 
+	// 模拟 汽车开关锁
 	go simController.RunSimulations(context.Background())
+
+	// start websocket handler
+	http.HandleFunc("/ws", ws.Handler(
+		&websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
+		},
+		sub,
+		logger,
+	))
+	go func() {
+		addr := ":9090"
+		logger.Info("HTTP server started.", zap.String("addr", addr))
+		logger.Sugar().Fatal(http.ListenAndServe(addr, nil))
+	}()
 
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
 		Name:   "car",

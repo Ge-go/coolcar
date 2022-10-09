@@ -22,7 +22,7 @@ Page({
         });
     },
     onShareLocation(e) {
-        const shareLocation = e.detail.value;
+        this.data.shareLocation = e.detail.value;
         wx.setStorageSync(shareLocationKey, shareLocation);
     },
     //TODO: 后续的开锁接口

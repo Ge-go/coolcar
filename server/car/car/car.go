@@ -4,6 +4,7 @@ import (
 	"context"
 	"coolcar/car/api/gen/v1"
 	"coolcar/car/dao"
+	"coolcar/car/mq"
 	"coolcar/shared/id"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.uber.org/zap"
@@ -11,18 +12,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Publisher defines the publishing interface
-type Publisher interface {
-	Publish(ctx context.Context, car *carpb.CarEntity) error
-}
-
 // Service car manage
 // Service defines a car service.
 type Service struct {
 	Logger *zap.Logger
 	Mongo  *dao.Mongo
 
-	Publisher Publisher
+	Publisher mq.Publisher
 
 	carpb.UnsafeCarServiceServer
 }
@@ -43,6 +39,7 @@ func (s *Service) CreateCar(c context.Context, req *carpb.CreateCarReq) (*carpb.
 func (s *Service) GetCar(c context.Context, req *carpb.GetCarReq) (*carpb.Car, error) {
 	cr, err := s.Mongo.GetCar(c, id.CarID(req.Id))
 	if err != nil {
+		s.Logger.Error("cannot get Car", zap.Error(err))
 		return nil, status.Error(codes.NotFound, "")
 	}
 	return cr.Car, nil

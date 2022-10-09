@@ -3,17 +3,14 @@ package sim
 import (
 	"context"
 	carpb "coolcar/car/api/gen/v1"
+	"coolcar/car/mq"
 	"fmt"
 	"go.uber.org/zap"
 	"time"
 )
 
-type Subscriber interface {
-	Subscribe(ctx context.Context) (chan *carpb.CarEntity, func(), error)
-}
-
 type Controller struct {
-	Subscriber Subscriber
+	Subscriber mq.Subscriber
 
 	CarService carpb.CarServiceClient
 	Logger     *zap.Logger

@@ -21,13 +21,20 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("cannot Upgrade,%v\n", err)
 		return
 	}
+	defer conn.Close()
 
+	done := make(chan struct{})
 	go func() {
 		for {
 			m := make(map[string]interface{})
 			err := conn.ReadJSON(&m)
 			if err != nil {
+				if !websocket.IsCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure, websocket.CloseNoStatusReceived) {
+					fmt.Printf("unexpected read error:%v\n", err)
+				}
 				fmt.Printf("cannot read json:%v\n", err)
+				done <- struct{}{}
+				break
 			}
 			fmt.Printf("message recv: %v\n", m)
 		}
@@ -35,6 +42,12 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 
 	i := 0
 	for {
+		select {
+		case <-time.After(0.2e9):
+		case <-done:
+			return
+		}
+
 		i++
 		err := conn.WriteJSON(map[string]string{
 			"hello":  "websocket",
@@ -46,7 +59,5 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			}
 			fmt.Printf("cannot write json %v\n", err)
 		}
-
-		time.Sleep(0.2e9)
 	}
 }

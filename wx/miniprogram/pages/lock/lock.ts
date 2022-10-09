@@ -1,9 +1,12 @@
+import { CarService } from "../../service/car"
+import { car } from "../../service/proto_gen/car/car_pb"
 import { TripService } from "../../service/trip"
 import { routing } from "../../utils/routing"
 
 const shareLocationKey = "share_Location"
 // pages/lock/lock.ts
 Page({
+  carRefresher: 0,
   car_id: '', //汽车id
   data: {
     shareLocation: false,
@@ -34,14 +37,6 @@ Page({
     wx.getLocation({
       type: 'gcj02',
       success: async loc => {
-        console.log('starting a trip', {
-          location: {
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-          },
-          //TODO:  这里的数据要进行处理的,用户是否要展示头像
-          avatarURL: this.data.shareLocation ? this.data.avatarURL : '',
-        })
         //保护car_id
         if (!this.car_id) {
           console.log('no CarID specified')
@@ -50,6 +45,7 @@ Page({
         const trip = await TripService.createTrip({
           carId: this.car_id,
           start: loc,
+          avatarUrl: this.data.shareLocation ? this.data.avatarURL : ''
         })
 
         if (!trip.id) {
@@ -62,19 +58,22 @@ Page({
           title: '开锁中',
           mask: true, //防止触摸下一层
         })
-        //这里我要知道我开的是哪辆车的锁才回去跳转
-        console.log("unlocking car", this.car_id)
-        setTimeout(() => {
-          wx.redirectTo(
-            {
-              url: routing.drving({
-                trip_id: trip.id!,
-              }),
-              complete: () => {
-                wx.hideLoading()
-              }
-            })
-        }, 500)
+
+        this.carRefresher = setInterval(async () => {
+          const c = await CarService.getCar(this.car_id)
+          if (c.status === car.v1.CarStatus.UNLOCKED) {
+            wx.redirectTo(
+              {
+                url: routing.drving({
+                  trip_id: trip.id!,
+                }),
+                complete: () => {
+                  wx.hideLoading()
+                }
+              })
+          }
+        }, 2000)
+
       },
       fail: () => {
         console.error,
@@ -84,6 +83,17 @@ Page({
           })
       }
     })
+  },
 
+  onUnload() {
+    this.clearCarRefresher()
+    wx.hideLoading()
+  },
+
+  clearCarRefresher() {
+    if (this.carRefresher) {
+      clearInterval(this.carRefresher)
+      this.carRefresher = 0
+    }
   }
 })

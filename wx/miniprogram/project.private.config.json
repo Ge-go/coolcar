@@ -11,7 +11,7 @@
       "list": [
         {
           "name": "",
-          "pathName": "pages/driving/driving",
+          "pathName": "pages/register/register",
           "query": "",
           "launchMode": "default",
           "scene": null
