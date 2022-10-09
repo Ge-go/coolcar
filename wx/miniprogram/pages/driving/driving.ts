@@ -1,93 +1,114 @@
+import { rental } from "../../service/proto_gen/rental/rental_pb"
 import { TripService } from "../../service/trip"
+import { formatDuration, formatFee } from "../../utils/format"
 import { routing } from "../../utils/routing"
 
-const centerPerSec = 0.7  //记录租车价格,每秒钟0.35分,如产品有改动,则计费规则可改变
-// pages/driving/driving.ts
-let elapsedSec = 0
-let cents = 0
+const updateIntervalSec = 5
+const initialLat = 30
+const initialLng = 120
 
-function formatDuration(sec: number) {  //计算时间函数
-    const padString = (n: number) =>
-        n < 10 ? '0' + n.toFixed(0) : n.toFixed(0)
-    const h = Math.floor(sec / 3600)
-    sec -= 3600 * h
-    const m = Math.floor(sec / 60)
-    sec -= 60 * m
-    const s = Math.floor(sec)
-    return `${padString(h)}:${padString(m)}:${padString(s)}`
-}
-
-function formatFee(cents: number) {  //费用计算
-    return (cents / 100).toFixed(2)
+function durationStr(sec: number) {
+    const dur = formatDuration(sec)
+    return `${dur.hh}:${dur.mm}:${dur.ss}`
 }
 
 Page({
+    timer: undefined as number|undefined,
     tripID: '',
-    timer: undefined as undefined | number,  //租车时间
+
     data: {
         location: {
-            latitude: 22,
-            longitude: 100,
+            latitude: initialLat,
+            longitude: initialLng,
         },
+        scale: 12,
         elapsed: '00:00:00',
         fee: '0.00',
-        scale: 12,
-        isSettlement: true as undefined | boolean, //是否结算
+        markers: [
+            {
+                iconPath: "/resources/car.png",
+                id: 0,
+                latitude: initialLat,
+                longitude: initialLng,
+                width: 20,
+                height: 20,
+            },
+        ],
     },
 
     onLoad(opt: Record<'trip_id', string>) {
         const o: routing.DrivingOpts = opt
-        console.log("current trip", o.trip_id)
-
-        TripService.GetTrip(o.trip_id).then(console.log)
         this.tripID = o.trip_id
-
         this.setupLocationUpdator()
-        this.setupTimer()
+        this.setupTimer(o.trip_id)
     },
 
     onUnload() {
         wx.stopLocationUpdate()
-        //数据清洗
         if (this.timer) {
             clearInterval(this.timer)
-            elapsedSec = 0
-            cents = 0
         }
     },
 
-    //实时更新地理位置
     setupLocationUpdator() {
-        wx.startLocationUpdate({  //app.json新增该字段属性,要引入后才能使用
+        wx.startLocationUpdate({
             fail: console.error,
         })
-
         wx.onLocationChange(loc => {
-            console.log(loc)  //用于测试是否在不断更新位置信息,该功能会比较费电耗时
             this.setData({
                 location: {
                     latitude: loc.latitude,
                     longitude: loc.longitude,
-                }
+                },
             })
         })
     },
 
-    //监控当前租车时间
-    setupTimer() {
+    async setupTimer(tripID: string) {
+        const trip = await TripService.GetTrip(tripID)
+        if (trip.status !== rental.v1.TripStatus.IN_PROGRESS) {
+            console.error('trip not in progress')
+            return
+        }
+        let secSinceLastUpdate = 0
+        let lastUpdateDurationSec = trip.current!.timestampSec! - trip.start!.timestampSec!
+        const toLocation = (trip: rental.v1.ITrip) => ({
+            latitude: trip.current?.location?.latitude || initialLat,
+            longitude: trip.current?.location?.longitude || initialLng,
+        })
+        const location = toLocation(trip)
+        this.data.markers[0].latitude = location.latitude
+        this.data.markers[0].longitude = location.longitude
+        this.setData({
+            elapsed: durationStr(lastUpdateDurationSec),
+            fee: formatFee(trip.current!.feeCent!),
+            location,
+            markers: this.data.markers,
+        })
+
         this.timer = setInterval(() => {
-            elapsedSec++
-            cents += centerPerSec
+            secSinceLastUpdate++
+            if (secSinceLastUpdate % updateIntervalSec === 0) {
+                TripService.GetTrip(tripID).then(trip => {
+                    lastUpdateDurationSec = trip.current!.timestampSec! - trip.start!.timestampSec!
+                    secSinceLastUpdate = 0
+                    const location = toLocation(trip)
+                    this.data.markers[0].latitude = location.latitude
+                    this.data.markers[0].longitude = location.longitude
+                    this.setData({
+                        fee: formatFee(trip.current!.feeCent!),
+                        location,
+                        markers: this.data.markers,
+                    })
+                }).catch(console.error)
+            }
             this.setData({
-                elapsed: formatDuration(elapsedSec),
-                fee: formatFee(cents),
+                elapsed: durationStr(lastUpdateDurationSec + secSinceLastUpdate),
             })
         }, 1000)
     },
 
-    //结束行程  是否结束行程->判断是否在指定区域内->进入到结算页面(携带数据)
     onEndTripTap() {
-        //TODO:请求后台是否处于指定区域
         TripService.finishTrip(this.tripID).then(() => {
             wx.redirectTo({
                 url: routing.mytrips(),
@@ -97,38 +118,6 @@ Page({
             wx.showToast({
                 title: '结束行程失败',
                 icon: 'none',
-            })
-        })
-
-        //结算中
-        wx.showLoading({
-            title: '结算中',
-            mask: true,
-        })
-
-        //弹窗
-        this.setData({
-            iosDialog1: true,
-        });
-    },
-
-    //关闭结束行程弹窗
-    closeTip() {
-        this.setData({
-            iosDialog1: false,
-        });
-    },
-
-    //从当前页面进入到结算页面
-    toSettlement() {
-        //生成订单
-        console.log(elapsedSec, cents)
-
-        wx.redirectTo({
-            //url: `/pages/pay/pay?travel_time=${formatDuration(elapsedSec)}&travel_expenses=${formatFee(cents)}`,
-            url: routing.Pay({
-                travel_time: formatDuration(elapsedSec),
-                travel_expenses: formatFee(cents)
             })
         })
     }

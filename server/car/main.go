@@ -7,7 +7,11 @@ import (
 	"coolcar/car/dao"
 	"coolcar/car/mq/amqpclt"
 	"coolcar/car/sim"
+	"coolcar/car/sim/pos"
+	"coolcar/car/trip"
 	"coolcar/car/ws"
+	rentalpb "coolcar/rental/api/gen/v1"
+	coolenvpb "coolcar/shared/coolenv"
 	"coolcar/shared/server"
 	"github.com/gorilla/websocket"
 	"github.com/streadway/amqp"
@@ -47,16 +51,31 @@ func main() {
 		logger.Fatal("cannot create subscriber", zap.Error(err))
 	}
 
+	posSub, err := amqpclt.NewSubscriber(amqpConn, "pos_sim", logger)
+	if err != nil {
+		logger.Fatal("cannot create pos subscriber", zap.Error(err))
+	}
+
 	// grpc 在dial的时候是不会去建立连接的,建立连接是在内部调用rpc方法时去走的
 	carClient, err := grpc.Dial("localhost:8084", grpc.WithInsecure())
 	if err != nil {
 		logger.Fatal("cannot dial car service", zap.Error(err))
 	}
 
+	aiClient, err := grpc.Dial("localhost:18001", grpc.WithInsecure())
+	if err != nil {
+		logger.Fatal("cannot dial pos service", zap.Error(err))
+	}
+
 	simController := &sim.Controller{
-		CarService: carpb.NewCarServiceClient(carClient),
-		Subscriber: sub,
-		Logger:     logger,
+		CarService:    carpb.NewCarServiceClient(carClient),
+		CarSubscriber: sub,
+		Logger:        logger,
+		AIService:     coolenvpb.NewAIServiceClient(aiClient),
+		PosSubscriber: &pos.Subscriber{
+			Sub:    posSub,
+			Logger: logger,
+		},
 	}
 
 	// 模拟 汽车开关锁
@@ -77,6 +96,10 @@ func main() {
 		logger.Info("HTTP server started.", zap.String("addr", addr))
 		logger.Sugar().Fatal(http.ListenAndServe(addr, nil))
 	}()
+
+	// Start trip updater.
+	tripConn, err := grpc.Dial("localhost:8082", grpc.WithInsecure())
+	go trip.RunUpdater(sub, rentalpb.NewTripServiceClient(tripConn), logger)
 
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
 		Name:   "car",

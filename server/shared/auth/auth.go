@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	authHeader = "authorization"
-	prefixKey  = "Bearer "
+	ImpersonateAccountHeader = "impersonate-account-id"
+	authHeader               = "authorization"
+	prefixKey                = "Bearer "
 )
 
 // Interceptor create a auth interceptor
@@ -42,6 +43,14 @@ type interceptor struct {
 }
 
 func (i *interceptor) HandleReq(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+	// 这里的动作如何保证不危险
+	// 唯一方法,不能对外保留这个header
+	aid := impersonationFromContext(ctx)
+	if aid != "" {
+		fmt.Printf("impersonation %q\n", aid)
+		return handler(ContextWithAccountID(ctx, id.AccountID(aid)), req)
+	}
+
 	// not get tokenWithCtx
 	token, err := tokenFromCtx(ctx)
 	if err != nil {
@@ -54,6 +63,20 @@ func (i *interceptor) HandleReq(ctx context.Context, req interface{}, info *grpc
 	}
 
 	return handler(ContextWithAccountID(ctx, id.AccountID(accountID)), req)
+}
+
+// 过滤特殊头部信息
+func impersonationFromContext(ctx context.Context) string {
+	m, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return ""
+	}
+
+	imp := m[ImpersonateAccountHeader]
+	if len(imp) == 0 {
+		return ""
+	}
+	return imp[0]
 }
 
 // hide accountID

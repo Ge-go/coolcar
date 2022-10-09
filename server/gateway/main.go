@@ -5,12 +5,14 @@ import (
 	authpb "coolcar/auth/api/gen/v1"
 	carpb "coolcar/car/api/gen/v1"
 	rentalpb "coolcar/rental/api/gen/v1"
+	"coolcar/shared/auth"
 	"coolcar/shared/server"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
 	"log"
 	"net/http"
+	"net/textproto"
 )
 
 //启动gateWay服务
@@ -32,7 +34,15 @@ func main() {
 				DiscardUnknown: true, // 忽略 client 发送的不存在的 poroto 字段
 			},
 		},
-	))
+	), runtime.WithIncomingHeaderMatcher(func(key string) (string, bool) {
+		//过滤坏请求
+		// CanonicalMIMEHeaderKey -后面的首字母转换成大写
+		if key == textproto.CanonicalMIMEHeaderKey(runtime.MetadataHeaderPrefix+auth.ImpersonateAccountHeader) {
+			//false 我要扔掉这个头部信息
+			return "", false
+		}
+		return runtime.DefaultHeaderMatcher(key)
+	}))
 
 	serverConfig := []struct {
 		name         string
