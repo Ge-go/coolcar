@@ -13,7 +13,7 @@ function durationStr(sec: number) {
 }
 
 Page({
-    timer: undefined as number|undefined,
+    timer: undefined as number | undefined,
     tripID: '',
 
     data: {
@@ -24,16 +24,7 @@ Page({
         scale: 12,
         elapsed: '00:00:00',
         fee: '0.00',
-        markers: [
-            {
-                iconPath: "/resources/car.png",
-                id: 0,
-                latitude: initialLat,
-                longitude: initialLng,
-                width: 20,
-                height: 20,
-            },
-        ],
+        markers: [],
     },
 
     onLoad(opt: Record<'trip_id', string>) {
