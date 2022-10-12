@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: nginx-service
 spec:
-  selector:  #通过selector  通过识别标签为nginx来为我提供服务
+  selector:
     app: nginx
   ports:
     - protocol: TCP

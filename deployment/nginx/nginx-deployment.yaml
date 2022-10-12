@@ -1,28 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:  #元数据
+metadata:
   name: nginx-deployment
   labels:
     app: nginx
-spec:  #设置
-  replicas: 2  #设置2个nginx服务
+spec:
+  replicas: 2
   selector:
     matchLabels:
       app: nginx
-  template:  #配置
+  template:
     metadata:
       labels:
         app: nginx
     spec:
-      containers:  #去docker下载nginx
+      containers:
       - name: nginx
         image: nginx
         ports:
         - containerPort: 80
-        env:
-          -name: ADDR
-          value: :8080
-        resources:  #给你的资源
+        resources:
           limits:
             cpu: 100m
             memory: 128Mi
