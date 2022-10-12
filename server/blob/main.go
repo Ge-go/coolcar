@@ -7,42 +7,49 @@ import (
 	"coolcar/blob/blob/dao"
 	"coolcar/blob/cos"
 	"coolcar/shared/server"
+	"log"
+
+	"github.com/namsral/flag"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"log"
 )
 
-const (
-	cosAddr = "https://coolcar-1300439358@23.cos.ap-wcgguangzhou.myqcloud.com"
-	secID   = "&&AKIDhMqDapuqdHuy%%1ylS1UpzyqfMwOwZG3pX^^"
-	secKey  = "^^uqnbGlDXitT0Y%%98EOPLBtQjrnW3SAmNx&&"
-)
+var addr = flag.String("addr", ":8083", "address to listen")
+var mongoURI = flag.String("mongo_uri", "mongodb://localhost:27017", "mongo uri")
+var cosAddr = flag.String("cos_addr", "<URL>", "cos address")
+var cosSecID = flag.String("cos_sec_id", "<SEC_ID>", "cos secret id")
+var cosSecKey = flag.String("cos_sec_key", "<SEC_KEY>", "cos secret key")
 
 func main() {
+	flag.Parse()
+
 	logger, err := server.NewZapLogger()
 	if err != nil {
-		panic(err.Error())
+		log.Fatalf("cannot create logger: %v", err)
 	}
 
-	mgClient, err := mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://121.37.232.8:27019/coolcar?readPreference=primary&ssl=false"))
+	c := context.Background()
+	mongoClient, err := mongo.Connect(c, options.Client().ApplyURI(*mongoURI))
 	if err != nil {
-		log.Fatalf("cannot connect mongo:%v", err)
+		logger.Fatal("cannot connect mongodb", zap.Error(err))
 	}
+	db := mongoClient.Database("coolcar")
 
-	st, err := cos.NewService(cosAddr, secID, secKey)
+	st, err := cos.NewService(*cosAddr, *cosSecID, *cosSecKey)
 	if err != nil {
-		log.Fatalf("cannot new cos service:%v", err)
+		logger.Fatal("cannot create cos service", zap.Error(err))
 	}
 
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
 		Name:   "blob",
-		Addr:   ":8083",
+		Addr:   *addr,
 		Logger: logger,
 		RegisterFunc: func(s *grpc.Server) {
 			blobpb.RegisterBlobServiceServer(s, &blob.Service{
 				Storage: st,
-				Mongo:   dao.NewMongo(mgClient.Database("coolcar")),
+				Mongo:   dao.NewMongo(db),
 				Logger:  logger,
 			})
 		},

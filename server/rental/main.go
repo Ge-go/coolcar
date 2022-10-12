@@ -6,81 +6,81 @@ import (
 	carpb "coolcar/car/api/gen/v1"
 	rentalpb "coolcar/rental/api/gen/v1"
 	"coolcar/rental/profile"
-	daoProfile "coolcar/rental/profile/dao"
+	profiledao "coolcar/rental/profile/dao"
 	"coolcar/rental/trip"
 	"coolcar/rental/trip/client/car"
 	"coolcar/rental/trip/client/poi"
-	profileClient "coolcar/rental/trip/client/profile"
-	daoTrip "coolcar/rental/trip/dao"
+	profClient "coolcar/rental/trip/client/profile"
+	tripdao "coolcar/rental/trip/dao"
 	"coolcar/shared/server"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"google.golang.org/grpc"
 	"log"
 	"time"
+
+	"github.com/namsral/flag"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
+var addr = flag.String("addr", ":8082", "address to listen")
+var mongoURI = flag.String("mongo_uri", "mongodb://localhost:27017", "mongo uri")
+var blobAddr = flag.String("blob_addr", "localhost:8083", "address for blob service")
+var aiAddr = flag.String("ai_addr", "localhost:18001", "address for ai service")
+var carAddr = flag.String("car_addr", "localhost:8084", "address for car service")
+var authPublicKeyFile = flag.String("auth_public_key_file", "shared/auth/public.key", "public key file for auth")
+
 func main() {
-	ctx := context.Background()
+	flag.Parse()
+
 	logger, err := server.NewZapLogger()
 	if err != nil {
-		panic(err.Error())
+		log.Fatalf("cannot create logger: %v", err)
 	}
 
-	mgClient, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://121.37.232.8:27019/coolcar?readPreference=primary&ssl=false"))
+	c := context.Background()
+	mongoClient, err := mongo.Connect(c, options.Client().ApplyURI(*mongoURI))
 	if err != nil {
-		log.Fatalf("cannot connect mongo:%v", err)
+		logger.Fatal("cannot connect mongodb", zap.Error(err))
 	}
+	db := mongoClient.Database("coolcar")
 
-	dbTp := daoTrip.NewMongo(mgClient.Database("coolcar"))
-	dbPf := daoProfile.NewMongo(mgClient.Database("coolcar"))
-
-	blobConn, err := grpc.Dial("localhost:8083", grpc.WithInsecure())
+	blobConn, err := grpc.Dial(*blobAddr, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("cannot dial blobConn:%v", err)
+		logger.Fatal("cannot connect blob service", zap.Error(err))
 	}
 
-	carConn, err := grpc.Dial("localhost:8084", grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("cannot dial carConn:%v", err)
-	}
-
-	pfService := &profile.Service{
+	profService := &profile.Service{
 		BlobClient:        blobpb.NewBlobServiceClient(blobConn),
 		PhotoGetExpire:    5 * time.Second,
 		PhotoCreateExpire: 10 * time.Second,
-		Mongo:             dbPf,
+		Mongo:             profiledao.NewMongo(db),
 		Logger:            logger,
 	}
+
+	carConn, err := grpc.Dial(*carAddr, grpc.WithInsecure())
+	if err != nil {
+		logger.Fatal("cannot connect car service", zap.Error(err))
+	}
+
 	logger.Sugar().Fatal(server.GRPCServer(&server.GRPCConfig{
-		RSAPublicKey: publicKey,
 		Name:         "rental",
-		Addr:         ":8082",
+		Addr:         *addr,
+		RSAPublicKey: *authPublicKeyFile,
 		Logger:       logger,
 		RegisterFunc: func(s *grpc.Server) {
 			rentalpb.RegisterTripServiceServer(s, &trip.Service{
-				Log:        logger,
-				POIManager: &poi.Manager{},
-				Mongo:      dbTp,
 				CarManager: &car.Manager{
 					CarService: carpb.NewCarServiceClient(carConn),
 				},
-				ProfileManager: &profileClient.Manager{
-					Fetcher: pfService,
+				ProfileManager: &profClient.Manager{
+					Fetcher: profService,
 				},
+				POIManager:   &poi.Manager{},
+				Mongo:        tripdao.NewMongo(db),
+				Log:          logger,
 			})
-
-			rentalpb.RegisterProfileServiceServer(s, pfService)
+			rentalpb.RegisterProfileServiceServer(s, profService)
 		},
 	}))
 }
-
-const publicKey = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqxFwNhX/uDuKAkaaOe9m
-7LHtMIvlImZvPlI7kRpRi+wuyTEAY/XZ3+ThnUotBxhKV3N8gmXXWLKn5Y5vcHUm
-N0jQW6d2Dn0qWZ+EBPOHdjA5HdqAnb3yxDq3S/tS20ARUm2Xyqx/+kGrVz/G/VHO
-cV3Uaq06nIUGVs0oeOQTTLlVEGjNHFvp+Ou3QLZJHjt5SdPf0P2++0hOt5OWUTY+
-n0kbTjYQyDf+VK7QkMpjPUCPgdS3BQ3wK6Mrpjrc9tQ7gtvIMMP4SWN8jPAwPUfy
-zJEbnTX2lI5SEW7k9fzlaAsDIRJLK8W0kSzW2cd+1VlhUC4RynVwQ+ONaUs4OqyP
-mwIDAQAB
------END PUBLIC KEY-----`
