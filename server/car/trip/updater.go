@@ -41,6 +41,7 @@ type impersonation struct {
 	AccountID id.AccountID
 }
 
+//GetRequestMetadata 将信息放入头部
 func (i *impersonation) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
 		auth.ImpersonateAccountHeader: i.AccountID.String(),

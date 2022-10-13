@@ -10,6 +10,7 @@ type Service struct {
 	Secret string
 }
 
+// Resolve 通过code 获取openid
 func (s *Service) Resolve(code string) (string, error) {
 	loginRsp, err := weapp.Login(s.AppID, s.Secret, code)
 	if err != nil {

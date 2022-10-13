@@ -95,7 +95,7 @@ func main() {
 		},
 	}
 	http.HandleFunc("/ws", ws.Handler(u, sub, logger))
-	go func() {
+	go func() { //启动websocket server
 		addr := *wsAddr
 		logger.Info("HTTP server started.", zap.String("addr", addr))
 		logger.Sugar().Fatal(

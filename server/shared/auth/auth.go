@@ -47,7 +47,6 @@ func (i *interceptor) HandleReq(ctx context.Context, req interface{}, info *grpc
 	// 唯一方法,不能对外保留这个header
 	aid := impersonationFromContext(ctx)
 	if aid != "" {
-		fmt.Printf("impersonation %q\n", aid)
 		return handler(ContextWithAccountID(ctx, id.AccountID(aid)), req)
 	}
 

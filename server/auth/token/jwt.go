@@ -20,6 +20,7 @@ func NewJWTToken(issuer string, privateKey *rsa.PrivateKey) *JWTToken {
 	}
 }
 
+// GenerateToken 通过accountId及expire 获取token  声明一个token形式,并使用privateKey签名获取token
 func (t *JWTToken) GenerateToken(accountID string, expire time.Duration) (string, error) {
 	nowSec := t.nowFunc().Unix()
 	tknNotSign := jwt.NewWithClaims(jwt.SigningMethodRS512, jwt.StandardClaims{
